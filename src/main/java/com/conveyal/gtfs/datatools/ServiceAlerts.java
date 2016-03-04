@@ -28,8 +28,9 @@ public class ServiceAlerts {
 
         ApiMain.initialize(config.getProperty("application.data"));
 
-        // Listen on port 3000 because that's what auth0 callback is set up for
-        port(3000); // <- Uncomment this if you want spark to listen to port 5678 in stead of the default 4567
+        if(config.containsKey("application.port")) {
+            port(Integer.parseInt(config.getProperty("application.port")));
+        }
 
         // static location must be set before routes are defined
         staticFileLocation("/public");
