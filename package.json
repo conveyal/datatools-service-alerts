@@ -29,7 +29,12 @@
     "react-leaflet": "^0.10.1",
     "react-pure-render": "^1.0.2",
     "react-select": "^1.0.0-beta9",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "redux": "^3.3.1",
+    "react-redux": "^4.4.0",
+    "react-bootstrap-datetimepicker": "^0.0.22",
+    "moment": "^2.11.2",
+    "react-addons-update": "^0.14.7"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",

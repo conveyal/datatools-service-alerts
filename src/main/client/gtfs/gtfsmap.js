@@ -11,8 +11,6 @@ import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leafl
 
 import Select from 'react-select'
 
-import config from './config'
-
 export default class GtfsMap extends React.Component {
   static propTypes = {
     attribution: PropTypes.string,
@@ -50,7 +48,7 @@ export default class GtfsMap extends React.Component {
       this.onChange(input)
     }
 
-    
+
     const polyline = [
       [37.779871, -122.426966],
       [37.78, -122.426966],
@@ -58,7 +56,7 @@ export default class GtfsMap extends React.Component {
     ]
     var mapStyle = {
       height: '400px',
-      width: '600px'
+      width: '555px'
     // WebkitTransition: 'all', // note the capital 'W' here
     // msTransition: 'all' // 'ms' is the only lowercase vendor prefix
     }
@@ -101,9 +99,10 @@ export default class GtfsMap extends React.Component {
     }
     return (
     <div>
-      <StopSearch 
+      <StopSearch
         onChange={handleStopSelection}
       />
+      <div>&nbsp;</div>
       <Map
         style={mapStyle}
         center={this.state.position}
@@ -129,7 +128,7 @@ export default class GtfsMap extends React.Component {
                       <li><strong>Agency:</strong> {this.state.feedId}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#">Create Alert for {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -259,4 +258,3 @@ class StopSearch extends React.Component {
     )
   }
 }
-
