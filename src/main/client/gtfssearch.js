@@ -41,7 +41,8 @@ export default class StopSearch extends React.Component {
 
   render() {
     const getOptions = (input) => {
-      return fetch(`/api/stops?name=${input}&feed=${this.state.feedId}`)
+      const url = input ? `/api/stops?name=${input}&feed=${this.state.feedId}` : `/api/stops?feed=${this.state.feedId}`
+      return fetch(url)
         .then((response) => {
           // console.log(response)
           // console.log(response.json())
@@ -66,11 +67,11 @@ export default class StopSearch extends React.Component {
     }
     const placeHolder = 'Begin typing to search for stops...'
     return (
-    <Select
+    <Select.Async
       autoload={true}
       cacheAsyncResults={false}
       filterOptions={false}
-      minimumInput={2}
+      minimumInput={1}
       placeholder={placeHolder}
       loadOptions={getOptions}
       value={this.state.value} />

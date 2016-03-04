@@ -1,4 +1,4 @@
-node_modules
+node_modules/
 .DS_Store
 dist
 *.log
@@ -9,3 +9,5 @@ app/config.js
 src/main/resources/public
 application.conf
 target/
+.java-version
+datatools.iml

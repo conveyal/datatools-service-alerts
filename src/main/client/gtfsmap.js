@@ -9,7 +9,7 @@ import CreateUser from './createuser'
 import UserSettings from './usersettings'
 import PermissionData from './permissiondata'
 
-import { Map, Marker, Popup, TileLayer, Polyline } from 'react-leaflet'
+import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leaflet'
 
 import Select from 'react-select'
 
@@ -32,12 +32,14 @@ export default class GtfsMap extends React.Component {
 
     this.state = {
       feedId: 'bart',
-      stops: []
+      stops: [],
+      message: ''
     }
   }
 
   componentDidMount() {
     // this.fetchUsers()
+
   }
 
   render() {
@@ -59,6 +61,7 @@ export default class GtfsMap extends React.Component {
       const newZoom = zoom.target._zoom
       console.log(newZoom)
       if (newZoom > 13 ){
+        this.setState(Object.assign({}, this.state, { message: '' }))
         const bounds = zoom.target.getBounds()
         // const maxLat = bounds._northEast.lat
         // const maxLng = bounds._northEast.lng
@@ -71,6 +74,9 @@ export default class GtfsMap extends React.Component {
         const minLng = bounds._southWest.lng
 
         this.getStopsForBox(maxLat, maxLng, minLat, minLng)
+      }
+      else{
+        this.setState(Object.assign({}, this.state, { message: 'zoom in for stops' }))
       }
 
       // console.log(something)
@@ -121,3 +127,28 @@ export default class GtfsMap extends React.Component {
         })
   }
 }
+
+
+// class MapMessage extends MapControl{
+//   constructor(props) {
+//     super(props)
+
+//     this.state = {
+//       // feedId: 'bart',
+//       // stops: [],
+//       // message: ''
+//     }
+//   }
+
+//   componentDidMount() {
+//     // this.fetchUsers()
+
+//   }
+
+//   render() {
+//     return (
+
+//     )
+//   }
+// }
+
