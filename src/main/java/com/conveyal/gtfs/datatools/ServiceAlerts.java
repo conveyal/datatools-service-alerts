@@ -26,7 +26,7 @@ public class ServiceAlerts {
 
         config.load(in);
 
-        ApiMain.initialize("/Users/demory/gtfs/scratch/");
+        ApiMain.initialize(config.getProperty("application.data"));
 
         // Listen on port 3000 because that's what auth0 callback is set up for
         port(3000); // <- Uncomment this if you want spark to listen to port 5678 in stead of the default 4567
