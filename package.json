@@ -28,7 +28,7 @@
     "react-dom": "^0.14.3",
     "react-leaflet": "^0.10.1",
     "react-pure-render": "^1.0.2",
-    "react-select": "^0.9.1",
+    "react-select": "^1.0.0-beta9",
     "request": "^2.67.0"
   },
   "devDependencies": {
