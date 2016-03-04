@@ -6,8 +6,6 @@ import DatatoolsNavbar from './navbar'
 
 import GtfsMap from './gtfsmap'
 
-import StopSearch from './gtfssearch'
-
 import PermissionData from './permissiondata'
 
 import config from './config'
@@ -173,7 +171,6 @@ export default class App extends React.Component {
             </Col>
             <Col xs={12} sm={6}>
             <h2>Map</h2>
-            <StopSearch />
             <GtfsMap token={this.state.token} feeds={this.feeds} />
             </Col>
           </Row>

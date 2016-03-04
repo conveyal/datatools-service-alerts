@@ -5,9 +5,7 @@ import fetch from 'isomorphic-fetch'
 
 import { Panel, Grid, Row, Col, Button } from 'react-bootstrap'
 
-import CreateUser from './createuser'
-import UserSettings from './usersettings'
-import PermissionData from './permissiondata'
+import { PureComponent, shallowEqual } from 'react-pure-render'
 
 import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leaflet'
 
@@ -29,11 +27,13 @@ export default class GtfsMap extends React.Component {
 
   constructor(props) {
     super(props)
-
+    const position = [37.779871, -122.426966]
     this.state = {
       feedId: 'bart',
       stops: [],
-      message: ''
+      message: '',
+      position: position,
+      map: {}
     }
   }
 
@@ -45,7 +45,12 @@ export default class GtfsMap extends React.Component {
   render() {
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
-    const position = [37.779871, -122.426966]
+
+    const handleSelection = (input) => {
+      this.onChange(input)
+    }
+
+    
     const polyline = [
       [37.779871, -122.426966],
       [37.78, -122.426966],
@@ -57,7 +62,20 @@ export default class GtfsMap extends React.Component {
     // WebkitTransition: 'all', // note the capital 'W' here
     // msTransition: 'all' // 'ms' is the only lowercase vendor prefix
     }
-    const moveHandler = (zoom, something) => {
+    const handleStopSelection = (input) => {
+      console.log(input)
+      if (typeof input !== 'undefined' && input.stop){
+        this.setState(Object.assign({}, this.state, { stops: [input.stop], position: [input.stop.stop_lat, input.stop.stop_lon] }))
+
+      }
+    }
+    const layerAddHandler = (e) => {
+      console.log(e)
+      if (this.state.stops.length === 1 && typeof e.layer !== 'undefined' && typeof e.layer._popup !== 'undefined'){
+        e.layer.openPopup()
+      }
+    }
+    const moveHandler = (zoom) => {
       const newZoom = zoom.target._zoom
       console.log(newZoom)
       if (newZoom > 13 ){
@@ -83,24 +101,40 @@ export default class GtfsMap extends React.Component {
     }
     return (
     <div>
-      <Map 
-        style={mapStyle} 
-        center={position} 
-        zoom={13} 
-        onLeafletZoomend={moveHandler} 
-        onLeafletMoveend={moveHandler} 
-        className='Gtfs-Map' 
+      <StopSearch 
+        onChange={handleStopSelection}
+      />
+      <Map
+        style={mapStyle}
+        center={this.state.position}
+        zoom={13}
+        onLeafletZoomend={moveHandler}
+        onLeafletMoveend={moveHandler}
+        onLeafletLayeradd={layerAddHandler}
+        className='Gtfs-Map'
         >
         <TileLayer url='http://{s}.tile.osm.org/{z}/{x}/{y}.png' attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
         {this.state.stops.map((stop, index) => {
-          return (
-            <Marker
-              position={[stop.stop_lat, stop.stop_lon]}
-              {...stop}
-              >
-              {stop.label && <Popup><span>{stop.label}</span></Popup>}
-            </Marker>
-          )
+          if (typeof stop !== 'undefined') {
+            return (
+              <Marker
+                position={[stop.stop_lat, stop.stop_lon]}
+                key={`marker-${stop.stop_id}`}
+                >
+                <Popup>
+                  <div>
+                    <h3>{stop.stop_name}</h3>
+                    <ul>
+                      <li><strong>ID:</strong> {stop.stop_id}</li>
+                      <li><strong>Agency:</strong> {this.state.feedId}</li>
+                      {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
+                    </ul>
+                    <Button href="#">Create Alert for {stop.stop_id}</Button>
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          }
         })}
       </Map>
     </div>
@@ -110,6 +144,82 @@ export default class GtfsMap extends React.Component {
   getStopsForBox(maxLat, maxLng, minLat, minLng){
     return fetch(`/api/stops?max_lat=${maxLat}&max_lon=${maxLng}&min_lat=${minLat}&min_lon=${minLng}&feed=${this.state.feedId}`)
         .then((response) => {
+          return response.json()
+        })
+        .then((json) => {
+          console.log(json)
+          this.setState(Object.assign({}, this.state, { stops: json }))
+          return json
+        })
+  }
+}
+class StopPopup extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      stop: this.props.stop
+    }
+  }
+
+  componentDidMount() {
+    // this.fetchUsers()
+
+  }
+  render() {
+    const stop = this.state.stop
+    return (
+      <Popup>
+        <div>
+          <h3>{stop.stop_name}</h3>
+          <ul>
+            <li><strong>ID:</strong> {stop.stop_id}</li>
+            <li><strong>Agency:</strong> {this.state.feedId}</li>
+            {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
+          </ul>
+          <Button href="#">Create Alert for {stop.stop_id}</Button>
+        </div>
+      </Popup>
+    )
+  }
+}
+class StopSearch extends React.Component {
+  /*
+ * assuming the API returns something like this:
+ *   const json = [
+ *     { value: 'one', label: 'One' },
+ *     { value: 'two', label: 'Two' }
+ *   ]
+ */
+
+  options = {};
+
+  state = {
+    feedId: 'bart'
+  };
+
+  cacheOptions (options) {
+    options.forEach(o => {
+      this.options[o.value] = o.feature
+    })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (!shallowEqual(nextProps.value, this.props.value)) {
+      this.setState({value: nextProps.value})
+    }
+  }
+
+  onChange (value) {
+    this.setState({value})
+    this.props.onChange && this.props.onChange(value && this.options[value.value])
+  }
+
+  render() {
+    const getOptions = (input) => {
+      const url = input ? `/api/stops?name=${input}&feed=${this.state.feedId}` : `/api/stops?feed=${this.state.feedId}`
+      return fetch(url)
+        .then((response) => {
           // console.log(response)
           // console.log(response.json())
           // this.state.stops = response.json()
@@ -117,38 +227,36 @@ export default class GtfsMap extends React.Component {
         })
         .then((json) => {
           // this.state.stops = json
-          // this.setState(Object.assign({}, this.state, { stops: stopOptions }))
-          // const stopOptions = json.map(stop => ({value: stop.stop_id, label: stop.stop_name}))
+          this.setState(Object.assign({}, this.state, { stops: stopOptions }))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: stop.stop_name}))
           console.log(json)
-          // this.state.stops = json
-          this.setState(Object.assign({}, this.state, { stops: json }))
-          // console.log(stopOptions)
-          return json
+          console.log(stopOptions)
+          return { options: stopOptions }
         })
+    }
+    const handleChange = (input) => {
+      this.onChange(input)
+      this.props.onChange(input)
+    }
+    const options = [
+      {value: 'one', label: 'One'},
+      {value: 'two', label: 'Two'}
+    ]
+    const selectStyle = {
+      'z-index': '2000'
+    }
+    const placeHolder = 'Begin typing to search for stops...'
+    return (
+    <Select.Async
+      autoload={true}
+      cacheAsyncResults={false}
+      filterOptions={false}
+      minimumInput={1}
+      placeholder={placeHolder}
+      loadOptions={getOptions}
+      value={this.state.value}
+      onChange={handleChange} />
+    )
   }
 }
-
-
-// class MapMessage extends MapControl{
-//   constructor(props) {
-//     super(props)
-
-//     this.state = {
-//       // feedId: 'bart',
-//       // stops: [],
-//       // message: ''
-//     }
-//   }
-
-//   componentDidMount() {
-//     // this.fetchUsers()
-
-//   }
-
-//   render() {
-//     return (
-
-//     )
-//   }
-// }
 
