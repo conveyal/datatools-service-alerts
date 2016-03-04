@@ -1,0 +1,5 @@
+@import url('~react-select/dist/react-select.css');
+
+.Select {
+  z-index: 2000;
+}

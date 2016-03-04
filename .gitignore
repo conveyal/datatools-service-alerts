@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+dist
+*.log
+coverage
+.idea
+server_config.js
+app/config.js
+src/main/resources/public
+application.conf
+target/
