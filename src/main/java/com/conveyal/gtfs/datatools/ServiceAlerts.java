@@ -1,10 +1,13 @@
 package com.conveyal.gtfs.datatools;
 
 import com.conveyal.gtfs.api.*;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 import static spark.SparkBase.port;
@@ -26,7 +29,21 @@ public class ServiceAlerts {
 
         config.load(in);
 
-        ApiMain.initialize(config.getProperty("application.data"));
+        // if work_offline, use local directory
+        if (Boolean.valueOf(config.getProperty("application.work_offline"))){
+            ApiMain.initialize(config.getProperty("application.data"));
+        }
+        // else, use s3
+        else {
+            String[] feedList  = config.getProperty("application.feed_list").split("_");
+
+            // TODO: fetch list of feedsources from data manager instead of from application.conf
+            // TODO: figure out authentication to data manager??
+//            String url = "";
+//            InputStream response = new URL(url).openStream();
+            ApiMain.initialize(null, false, config.getProperty("application.s3.gtfs_bucket"), null, feedList);
+        }
+
 
         if(config.containsKey("application.port")) {
             port(Integer.parseInt(config.getProperty("application.port")));

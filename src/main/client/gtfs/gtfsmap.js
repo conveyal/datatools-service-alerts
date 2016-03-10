@@ -9,6 +9,8 @@ import { PureComponent, shallowEqual } from 'react-pure-render'
 
 import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leaflet'
 
+import config from '../config'
+
 import Select from 'react-select'
 
 export default class GtfsMap extends React.Component {
@@ -27,7 +29,7 @@ export default class GtfsMap extends React.Component {
     super(props)
     const position = [37.779871, -122.426966]
     this.state = {
-      feedId: 'bart',
+      feedId: config.feedIds,
       stops: [],
       message: '',
       position: position,
@@ -125,7 +127,7 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {this.state.feedId}</li>
+                      <li><strong>Agency:</strong> BART</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
                     <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
@@ -141,7 +143,7 @@ export default class GtfsMap extends React.Component {
   }
 
   getStopsForBox(maxLat, maxLng, minLat, minLng){
-    return fetch(`/api/stops?max_lat=${maxLat}&max_lon=${maxLng}&min_lat=${minLat}&min_lon=${minLng}&feed=${this.state.feedId}`)
+    return fetch(`/api/stops?max_lat=${maxLat}&max_lon=${maxLng}&min_lat=${minLat}&min_lon=${minLng}&feed=${this.state.feedId.toString()}`)
         .then((response) => {
           return response.json()
         })
@@ -173,7 +175,7 @@ class StopPopup extends React.Component {
           <h3>{stop.stop_name}</h3>
           <ul>
             <li><strong>ID:</strong> {stop.stop_id}</li>
-            <li><strong>Agency:</strong> {this.state.feedId}</li>
+            <li><strong>Agency:</strong> BART</li>
             {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
           </ul>
           <Button href="#">Create Alert for {stop.stop_id}</Button>
@@ -194,7 +196,7 @@ class StopSearch extends React.Component {
   options = {};
 
   state = {
-    feedId: 'bart'
+    feedId: config.feedIds
   };
 
   cacheOptions (options) {
@@ -216,7 +218,7 @@ class StopSearch extends React.Component {
 
   render() {
     const getOptions = (input) => {
-      const url = input ? `/api/stops?name=${input}&feed=${this.state.feedId}` : `/api/stops?feed=${this.state.feedId}`
+      const url = input ? `/api/stops?name=${input}&feed=${this.state.feedId.toString()}` : `/api/stops?feed=${this.state.feedId.toString()}`
       return fetch(url)
         .then((response) => {
           // console.log(response)
