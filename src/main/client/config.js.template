@@ -4,5 +4,6 @@ export default {
   projectId: 'default_gtfs_manager_project_id',
   managerUrl: 'http://localhost:9000',
   editorUrl: 'http://localhost:9001',
-  title: 'Transit Data Manager'
+  title: 'Transit Data Manager',
+  feedIds: []
 }

@@ -39,8 +39,8 @@ application.prod=false
 # on how to provide these credentials to Transport Analyst using environment variables or a properties file.
 
 # The S3 bucket in which to get GTFS feeds
-s3.feeds-bucket=<BUCKET>
-s3.work-offline=false
+application.s3.gtfs_bucket=<BUCKET>
+application.work_offline=true
 
 # The URL of your Vanilla Extract server (https://github.com/conveyal/osm-lib)
 application.vex=<Java Vex server URL>
