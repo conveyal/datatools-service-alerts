@@ -29,7 +29,7 @@ export default class GtfsMap extends React.Component {
     super(props)
     const position = [37.779871, -122.426966]
     this.state = {
-      stops: [],
+      stops: this.props.stops,
       message: '',
       position: position,
       map: {}
@@ -43,6 +43,8 @@ export default class GtfsMap extends React.Component {
   }
 
   render() {
+    console.log(this.props.stops)
+    console.log(this.state.stops)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
 
@@ -107,6 +109,9 @@ export default class GtfsMap extends React.Component {
         <TileLayer url='http://{s}.tile.osm.org/{z}/{x}/{y}.png' attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
         {this.props.stops.map((stop, index) => {
           if (typeof stop !== 'undefined') {
+            var feed = this.props.feeds.filter(f => {return f.id == stop.feed_id})[0]
+            var feedName = feed.shortName !== null ? feed.shortName : feed.name
+            console.log(feed.id)
             return (
               <Marker
                 position={[stop.stop_lat, stop.stop_lon]}
@@ -117,7 +122,7 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> BART</li>
+                      <li><strong>Agency:</strong> {feedName}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
                     <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
@@ -129,6 +134,9 @@ export default class GtfsMap extends React.Component {
         })}
         {this.state.stops.map((stop, index) => {
           if (typeof stop !== 'undefined') {
+            var feed = this.props.feeds.filter(f => {return f.id == stop.feed_id})[0]
+            var feedName = feed.shortName !== null ? feed.shortName : feed.name
+            console.log(feed.id)
             return (
               <Marker
                 position={[stop.stop_lat, stop.stop_lon]}
@@ -139,7 +147,7 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> BART</li>
+                      <li><strong>Agency:</strong> {feedName}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
                     <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
@@ -168,34 +176,34 @@ export default class GtfsMap extends React.Component {
         })
   }
 }
-class StopPopup extends React.Component {
-  constructor(props) {
-    super(props)
+// class StopPopup extends React.Component {
+//   constructor(props) {
+//     super(props)
 
-    this.state = {
-      stop: this.props.stop
-    }
-  }
+//     this.state = {
+//       stop: this.props.stop
+//     }
+//   }
 
-  componentDidMount() {
-    // this.fetchUsers()
+//   componentDidMount() {
+//     // this.fetchUsers()
 
-  }
-  render() {
-    const stop = this.state.stop
-    return (
-      <Popup>
-        <div>
-          <h3>{stop.stop_name}</h3>
-          <ul>
-            <li><strong>ID:</strong> {stop.stop_id}</li>
-            <li><strong>Agency:</strong> BART</li>
-            {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
-          </ul>
-          <Button href="#">Create Alert for {stop.stop_id}</Button>
-        </div>
-      </Popup>
-    )
-  }
-}
+//   }
+//   render() {
+//     const stop = this.state.stop
+//     return (
+//       <Popup>
+//         <div>
+//           <h3>{stop.stop_name}</h3>
+//           <ul>
+//             <li><strong>ID:</strong> {stop.stop_id}</li>
+//             <li><strong>Agency:</strong> {stop.feed_id}</li>
+//             {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
+//           </ul>
+//           <Button href="#">Create Alert for {stop.stop_id}</Button>
+//         </div>
+//       </Popup>
+//     )
+//   }
+// }
 
