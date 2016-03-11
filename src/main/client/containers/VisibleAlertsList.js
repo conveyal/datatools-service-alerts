@@ -10,7 +10,6 @@ import AlertsList from '../components/AlertsList'
 const getVisibleAlerts = (alerts, visibilityFilter) => {
   let visibleAlerts = alerts.filter(alert =>
     alert.title.toLowerCase().indexOf((visibilityFilter.searchText || '').toLowerCase()) !== -1)
-  console.log('filter ' + visibilityFilter.filter)
   let now = moment()
   switch (visibilityFilter.filter) {
     case 'ALL':

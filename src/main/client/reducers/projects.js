@@ -9,7 +9,6 @@ const projects = (state = {
       var active = null
       for(var project of action.projects) {
         if(project.id === config.activeProjectId) {
-          console.log('found active!')
           active = project
         }
       }

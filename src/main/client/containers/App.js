@@ -20,13 +20,10 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
-
     this.auth0 = new Auth0Manager(config)
     this.dataManager = new DataManager({
       managerUrl : config.managerUrl
     })
-
-    console.log('loaded auth0, dm')
 
     var login = this.auth0.checkExistingLogin()
     if (login) this.handleLogin(login)
@@ -34,8 +31,6 @@ class App extends React.Component {
 
 
   handleLogin (loginPromise) {
-    console.log('handleLogin');
-
     var projectsPromise = loginPromise.then((user) => {
       // retrieve all projects (feed collections) and populate feeds for the default project
       return this.dataManager.getProjectsAndFeeds(user)
@@ -45,7 +40,6 @@ class App extends React.Component {
       let user = results[0]
       let projects = results[1]
 
-      console.log('got user/proj', user, projects);
       this.props.userLoggedIn(user, projects)
     })
   }
