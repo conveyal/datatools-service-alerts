@@ -156,7 +156,6 @@ export default class AlertEditor extends React.Component {
             <Col xs={6}>
               <GtfsMapSearch 
                 feeds={this.props.editableFeeds}
-                onStopClick={}
               />
             </Col>
 
