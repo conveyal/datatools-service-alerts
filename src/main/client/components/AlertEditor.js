@@ -4,7 +4,8 @@ import { Grid, Row, Col, ButtonGroup, Button, Input, Panel } from 'react-bootstr
 import DateTimeField from 'react-bootstrap-datetimepicker'
 
 import AffectedEntity from './AffectedEntity'
-import GtfsMap from '../gtfs/gtfsmap'
+import GtfsMapSearch from '../gtfs/gtfsmapsearch'
+
 
 var causes = [
   'UNKNOWN_CAUSE',
@@ -153,8 +154,9 @@ export default class AlertEditor extends React.Component {
             </Col>
 
             <Col xs={6}>
-              <GtfsMap
+              <GtfsMapSearch 
                 feeds={this.props.editableFeeds}
+                onStopClick={}
               />
             </Col>
 

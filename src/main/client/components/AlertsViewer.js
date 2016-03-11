@@ -5,7 +5,7 @@ import { Grid, Row, Col, Button } from 'react-bootstrap'
 import CreateAlert from '../containers/CreateAlert'
 import VisibleAlertsList from '../containers/VisibleAlertsList'
 
-import GtfsMap from '../gtfs/gtfsmap'
+import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 
 export default class AlertsViewer extends React.Component {
 
@@ -27,9 +27,9 @@ export default class AlertsViewer extends React.Component {
               <VisibleAlertsList />
             </Col>
             <Col xs={6}>
-              <GtfsMap
-                feeds = {this.props.editableFeeds}
-                onStopClick = {this.props.onStopClick}
+              <GtfsMapSearch 
+                feeds={this.props.editableFeeds}
+                onStopClick={this.props.onStopClick}
               />
             </Col>
           </Row>
