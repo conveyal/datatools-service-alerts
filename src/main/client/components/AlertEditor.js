@@ -137,6 +137,7 @@ export default class AlertEditor extends React.Component {
                         {this.props.alert.affectedEntities.map((entity) => {
                           return <AffectedEntity
                             entity={entity}
+                            feeds={this.props.editableFeeds}
                             onDeleteEntityClick={this.props.onDeleteEntityClick}
                             entityTypeChanged={this.props.entityTypeChanged}
                           />

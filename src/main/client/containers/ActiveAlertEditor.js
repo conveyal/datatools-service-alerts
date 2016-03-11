@@ -10,7 +10,8 @@ import AlertEditor from '../components/AlertEditor'
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    alert: state.activeAlert
+    alert: state.activeAlert,
+    editableFeeds: state.projects.active.feeds
   }
 }
 

@@ -4,12 +4,12 @@ import moment from 'moment'
 import { Panel, Row, Col, ButtonGroup, Button, Glyphicon, Input } from 'react-bootstrap'
 
 
-var agencies = [
+/*var agencies = [
   {
     id: 'BA',
     name: 'BART'
   },
-]
+]*/
 
 var modes = [
   {
@@ -107,7 +107,7 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Agency:</b></span>
-                  <AgencySelector />
+                  <AgencySelector feeds={this.props.feeds} />
                 </div>
               )
             case "MODE":
@@ -117,7 +117,7 @@ export default class AffectedEntity extends React.Component {
                   <ModeSelector />
                   <div style={indent}>
                     <span><i>Refine by Agency:</i></span>
-                    <AgencySelector />
+                    <AgencySelector feeds={this.props.feeds} />
                     <span><i>Refine by Stop:</i></span>
                     <StopSelector />
                   </div>
@@ -167,8 +167,8 @@ class AgencySelector extends React.Component {
           }}
           //value={this.props.entity.type}
         >
-          {agencies.map((agency) => {
-            return <option value={agency.id}>{agency.name}</option>
+          {this.props.feeds.map((feed) => {
+            return <option value={feed.id}>{feed.name}</option>
           })}
         </Input>
       </div>

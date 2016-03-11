@@ -13,7 +13,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'src/main/resources/public/'),
     filename: '[name].js',
-    publicPath: '/'
+    publicPath: ''
   },
   plugins: [
     new HtmlWebpackPlugin({
