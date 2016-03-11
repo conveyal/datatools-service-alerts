@@ -67,7 +67,10 @@ class App extends React.Component {
           ? <NoAccessScreen />
           : this.props.activeAlert !== null
             ? <ActiveAlertEditor />
-            : <AlertsViewer onStopClick={this.props.onStopClick} />
+            : <AlertsViewer
+              editableFeeds={this.props.editableFeeds}
+              onStopClick={this.props.onStopClick}
+            />
         }
       </div>
     )
@@ -77,7 +80,8 @@ class App extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
-    activeAlert: state.activeAlert
+    activeAlert: state.activeAlert,
+    editableFeeds: state.projects.active ? state.projects.active.feeds : []
   }
 }
 

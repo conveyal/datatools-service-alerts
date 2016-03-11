@@ -5,5 +5,5 @@ export default {
   managerUrl: 'http://localhost:9000',
   editorUrl: 'http://localhost:9001',
   title: 'Transit Data Manager',
-  feedIds: []
+  activeProjectId: 'your_project_id'
 }

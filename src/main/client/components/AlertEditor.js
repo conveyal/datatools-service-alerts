@@ -153,7 +153,9 @@ export default class AlertEditor extends React.Component {
             </Col>
 
             <Col xs={6}>
-             <GtfsMap />
+              <GtfsMap
+                feeds={this.props.editableFeeds}
+              />
             </Col>
 
           </Row>

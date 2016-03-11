@@ -28,6 +28,7 @@ export default class AlertsViewer extends React.Component {
             </Col>
             <Col xs={6}>
               <GtfsMap
+                feeds = {this.props.editableFeeds}
                 onStopClick = {this.props.onStopClick}
               />
             </Col>
