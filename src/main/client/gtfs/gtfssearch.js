@@ -47,6 +47,10 @@ export default class GtfsSearch extends React.Component {
   }
 
   render() {
+    var feedMap = this.props.feeds.reduce((map, obj) => {
+      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
+      return map;
+    })
     const getOptions = (input) => {
       const feedIds = this.props.feeds.map(feed => feed.id)
       const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
@@ -58,9 +62,8 @@ export default class GtfsSearch extends React.Component {
           return response.json() // .map(stop => ({value: stop.stop_id, label: stop.stop_name}))
         })
         .then((json) => {
-          // this.state.stops = json
           this.setState(Object.assign({}, this.state, { stops: stopOptions }))
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: stop.stop_name}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name}`}))
           console.log(json)
           console.log(stopOptions)
           return { options: stopOptions }

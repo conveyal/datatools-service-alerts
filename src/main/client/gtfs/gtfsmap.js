@@ -47,6 +47,10 @@ export default class GtfsMap extends React.Component {
     console.log(this.state.stops)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
+    var feedMap = this.props.feeds.reduce((map, obj) => {
+      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
+      return map;
+    })
 
     const handleSelection = (input) => {
       this.onChange(input)
@@ -109,9 +113,6 @@ export default class GtfsMap extends React.Component {
         <TileLayer url='http://{s}.tile.osm.org/{z}/{x}/{y}.png' attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
         {this.props.stops.map((stop, index) => {
           if (typeof stop !== 'undefined') {
-            var feed = this.props.feeds.filter(f => {return f.id == stop.feed_id})[0]
-            var feedName = feed.shortName !== null ? feed.shortName : feed.name
-            console.log(feed.id)
             return (
               <Marker
                 position={[stop.stop_lat, stop.stop_lon]}
@@ -122,7 +123,7 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {feedName}</li>
+                      <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
                     <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
@@ -134,9 +135,6 @@ export default class GtfsMap extends React.Component {
         })}
         {this.state.stops.map((stop, index) => {
           if (typeof stop !== 'undefined') {
-            var feed = this.props.feeds.filter(f => {return f.id == stop.feed_id})[0]
-            var feedName = feed.shortName !== null ? feed.shortName : feed.name
-            console.log(feed.id)
             return (
               <Marker
                 position={[stop.stop_lat, stop.stop_lon]}
@@ -147,7 +145,7 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {feedName}</li>
+                      <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
                     <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
