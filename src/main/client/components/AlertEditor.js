@@ -113,6 +113,7 @@ export default class AlertEditor extends React.Component {
                   <Input
                     type="textarea"
                     label="Description"
+                    placeholder="Detailed description of alert..."
                     defaultValue={this.props.alert.description}
                     onChange={(evt) => this.props.descriptionChanged(evt.target.value)}
                   />
@@ -124,6 +125,7 @@ export default class AlertEditor extends React.Component {
                   <Input
                     type="text"
                     label="URL"
+                    placeholder="http://511.org/alerts/transit/123"
                     defaultValue={this.props.alert.url}
                     onChange={(evt) => this.props.urlChanged(evt.target.value)}
                   />
