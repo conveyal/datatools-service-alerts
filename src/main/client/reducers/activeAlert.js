@@ -31,17 +31,63 @@ const activeAlert = (state = null, action) => {
     case 'ADD_ACTIVE_AFFECTED_ENTITY':
       entities = [...state.affectedEntities, action.entity]
       return update(state, {affectedEntities: {$set: entities}})
-    case 'SET_ACTIVE_AFFECTED_ENTITY_TYPE':
-      console.log('change type', action.entity, action.entityType)
+    case 'UPDATE_ACTIVE_ENTITY':
+      console.log('update entity', action.entity, action.field, action.value)
       foundIndex = state.affectedEntities.findIndex(e => e.id === action.entity.id)
       if(foundIndex !== -1) {
-        let updatedEntity = update(action.entity, {type: {$set: action.entityType}})
-        entities = [
-          ...state.affectedEntities.slice(0, foundIndex),
-          updatedEntity,
-          ...state.affectedEntities.slice(foundIndex + 1)
-        ]
-        return update(state, {affectedEntities: {$set: entities}})
+        switch (action.field) {
+          case 'TYPE':
+            let updatedEntity = update(action.entity, {
+              type: {$set: action.value},
+              stop: {$set: null},
+              route: {$set: null}
+            })
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+            return update(state, {affectedEntities: {$set: entities}})
+          case 'AGENCY':
+            updatedEntity = update(action.entity, {agency: {$set: action.value}})
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+            return update(state, {affectedEntities: {$set: entities}})
+          case 'MODE':
+            updatedEntity = update(action.entity, {mode: {$set: action.value}})
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+            return update(state, {affectedEntities: {$set: entities}})
+          case 'STOP':
+            updatedEntity = update(action.entity, {
+              stop: {$set: action.value}
+              // TODO: update agency id from feed id?
+            })
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+            return update(state, {affectedEntities: {$set: entities}})
+          case 'ROUTE':
+            updatedEntity = update(action.entity, {
+              route: {$set: action.value}
+              // TODO: update agency id from feed id?
+            })
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+            return update(state, {affectedEntities: {$set: entities}})
+        }
+        
       }
       return state
     case 'DELETE_ACTIVE_AFFECTED_ENTITY':

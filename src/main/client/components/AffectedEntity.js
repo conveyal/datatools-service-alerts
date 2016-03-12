@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import { Panel, Row, Col, ButtonGroup, Button, Glyphicon, Input } from 'react-bootstrap'
 
+import GtfsSearch from '../gtfs/gtfssearch'
 
 /*var agencies = [
   {
@@ -78,7 +79,7 @@ export default class AffectedEntity extends React.Component {
             <Input
               type="select"
               onChange={(evt) => {
-                this.props.entityTypeChanged(this.props.entity, evt.target.value)
+                this.props.entityUpdated(this.props.entity, "TYPE", evt.target.value)
               }}
               value={this.props.entity.type}
             >
@@ -107,19 +108,32 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Agency:</b></span>
-                  <AgencySelector feeds={this.props.feeds} />
+                  <AgencySelector 
+                    feeds={this.props.feeds} 
+                    entityUpdated={this.props.entityUpdated}
+                    entity={this.props.entity}
+                  />
                 </div>
               )
             case "MODE":
               return (
                 <div>
                   <span><b>Mode:</b></span>
-                  <ModeSelector />
+                  <ModeSelector 
+                    entityUpdated={this.props.entityUpdated}
+                    value={this.props.entity.type}
+                    entity={this.props.entity}
+                  />
                   <div style={indent}>
                     <span><i>Refine by Agency:</i></span>
                     <AgencySelector feeds={this.props.feeds} />
                     <span><i>Refine by Stop:</i></span>
-                    <StopSelector />
+                    <StopSelector 
+                      feeds={this.props.feeds} 
+                      stop={this.props.entity.stop}
+                      entityUpdated={this.props.entityUpdated}
+                      entity={this.props.entity}
+                    />
                   </div>
                 </div>
               )
@@ -127,7 +141,12 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Stop:</b></span>
-                  <StopSelector stop={this.props.entity.stop} />
+                  <StopSelector 
+                    feeds={this.props.feeds} 
+                    stop={this.props.entity.stop}
+                    entityUpdated={this.props.entityUpdated}
+                    entity={this.props.entity}
+                  />
                   <div style={indent}>
                     <span><i>Refine by Route:</i></span>
                     <RouteSelector />
@@ -141,7 +160,12 @@ export default class AffectedEntity extends React.Component {
                   <RouteSelector />
                   <div style={indent}>
                     <span><i>Refine by Stop:</i></span>
-                    <StopSelector />
+                    <StopSelector 
+                      feeds={this.props.feeds} 
+                      stop={this.props.entity.stop}
+                      entityUpdated={this.props.entityUpdated}
+                      entity={this.props.entity}
+                    />
                   </div>
                 </div>
               )
@@ -163,7 +187,7 @@ class AgencySelector extends React.Component {
         <Input
           type="select"
           onChange={(evt) => {
-            //this.props.entityModeChanged(this.props.entity, evt.target.value)
+            this.props.entityUpdated(this.props.entity, "AGENCY", evt.target.value)
           }}
           //value={this.props.entity.type}
         >
@@ -184,7 +208,7 @@ class ModeSelector extends React.Component {
         <Input
           type="select"
           onChange={(evt) => {
-            //this.props.entityModeChanged(this.props.entity, evt.target.value)
+            this.props.entityUpdated(this.props.entity, "MODE", evt.target.value)
           }}
           //value={this.props.entity.type}
         >
@@ -206,7 +230,7 @@ class RouteSelector extends React.Component {
         <Input
           type="select"
           onChange={(evt) => {
-            //this.props.entityModeChanged(this.props.entity, evt.target.value)
+            // this.props.entityModeChanged(this.props.entity, evt.target.value)
           }}
           //value={this.props.entity.type}
         >
@@ -220,16 +244,34 @@ class RouteSelector extends React.Component {
 }
 
 class StopSelector extends React.Component {
-
+  state = {
+    stop: this.props.stop
+  };
+  handleChange (input) {
+    // this.props.onChange(input)
+  }
   render () {
     console.log('render stop ent', this.props.stop)
+    const feedMap = this.props.feeds.reduce((map, obj) => {
+      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
+      return map;
+    })
+
     var stops = []
     return (
       <div>
-        <Input
-          type="text"
-          value={this.props.stop ? this.props.stop.stop_name : "None Selected"}
+        <GtfsSearch 
+          feeds={this.props.feeds}
+          onChange={(evt) => {
+            console.log(this.state.value)
+            if (typeof evt !== 'undefined' && evt !== null)
+              this.props.entityUpdated(this.props.entity, "STOP", evt.stop)
+            else if (evt == null)
+              this.props.entityUpdated(this.props.entity, "STOP", null)
+          }}
+          stop={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `(${feedMap[this.state.stop.feed_id]}) ${this.state.stop.stop_name}`} : ''}
         />
+        
       </div>
     )
   }

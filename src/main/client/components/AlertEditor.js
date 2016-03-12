@@ -140,7 +140,7 @@ export default class AlertEditor extends React.Component {
                             entity={entity}
                             feeds={this.props.editableFeeds}
                             onDeleteEntityClick={this.props.onDeleteEntityClick}
-                            entityTypeChanged={this.props.entityTypeChanged}
+                            entityUpdated={this.props.entityUpdated}
                           />
                         })}
                         <Button

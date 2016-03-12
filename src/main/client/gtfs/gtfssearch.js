@@ -26,7 +26,8 @@ export default class GtfsSearch extends React.Component {
   options = {};
 
   state = {
-    stops: []
+    stops: [],
+    value: this.props.stop
   };
 
   cacheOptions (options) {
@@ -38,6 +39,7 @@ export default class GtfsSearch extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (!shallowEqual(nextProps.value, this.props.value)) {
       this.setState({value: nextProps.value})
+      console.log(this.state.value)
     }
   }
 
@@ -45,9 +47,14 @@ export default class GtfsSearch extends React.Component {
     this.setState({value})
     this.props.onChange && this.props.onChange(value && this.options[value.value])
   }
-
+  getFeedName (feedId) {
+    const feedMap = this.props.feeds.reduce((map, obj) => {
+      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
+      return map;
+    })
+  }
   render() {
-    var feedMap = this.props.feeds.reduce((map, obj) => {
+    const feedMap = this.props.feeds.reduce((map, obj) => {
       map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
       return map;
     })

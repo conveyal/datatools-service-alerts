@@ -29,7 +29,7 @@ export default class GtfsMap extends React.Component {
     super(props)
     const position = [37.779871, -122.426966]
     this.state = {
-      stops: this.props.stops,
+      stops: [],
       message: '',
       position: position,
       map: {}

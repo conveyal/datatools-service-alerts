@@ -68,6 +68,17 @@ export const addActiveEntity = () => {
   }
 }
 
+// export const updateActiveEntity = () => {
+//   nextEntityId++
+//   return {
+//     type: 'UPDATE_ACTIVE_AFFECTED_ENTITY',
+//     entity: {
+//       id: nextEntityId,
+//       type: 'AGENCY'
+//     }
+//   }
+// }
+
 export const deleteActiveEntity = (entity) => {
   return {
     type: 'DELETE_ACTIVE_AFFECTED_ENTITY',
@@ -75,10 +86,11 @@ export const deleteActiveEntity = (entity) => {
   }
 }
 
-export const setActiveEntityType = (entity, entityType) => {
+export const updateActiveEntity = (entity, field, value) => {
   return {
-    type: 'SET_ACTIVE_AFFECTED_ENTITY_TYPE',
+    type: 'UPDATE_ACTIVE_ENTITY',
     entity,
-    entityType
+    field,
+    value
   }
 }

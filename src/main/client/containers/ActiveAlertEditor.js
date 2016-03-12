@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { saveAlert, deleteAlert } from '../actions/alerts'
 import { setActiveTitle, setActiveDescription, setActiveUrl, setActiveCause,
   setActiveEffect, setActiveStart, setActiveEnd, setActivePublished,
-  addActiveEntity, deleteActiveEntity, setActiveEntityType } from '../actions/activeAlert'
+  addActiveEntity, deleteActiveEntity, updateActiveEntity } from '../actions/activeAlert'
 
 import AlertEditor from '../components/AlertEditor'
 
@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     endChanged: (end) => dispatch(setActiveEnd(end)),
     onAddEntityClick: () => dispatch(addActiveEntity()),
     onDeleteEntityClick: (entity) => dispatch(deleteActiveEntity(entity)),
-    entityTypeChanged: (entity, type) => dispatch(setActiveEntityType(entity, type))
+    entityUpdated: (entity, field, value) => dispatch(updateActiveEntity(entity, field, value))
   }
 }
 
