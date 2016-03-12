@@ -126,7 +126,11 @@ export default class AffectedEntity extends React.Component {
                   />
                   <div style={indent}>
                     <span><i>Refine by Agency:</i></span>
-                    <AgencySelector feeds={this.props.feeds} />
+                    <AgencySelector 
+                      feeds={this.props.feeds} 
+                      entityUpdated={this.props.entityUpdated}
+                      entity={this.props.entity}
+                    />
                     <span><i>Refine by Stop:</i></span>
                     <StopSelector 
                       feeds={this.props.feeds} 

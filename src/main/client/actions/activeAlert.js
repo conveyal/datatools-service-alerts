@@ -57,27 +57,18 @@ export const setActivePublished = (published) => {
 }
 
 let nextEntityId = 0
-export const addActiveEntity = () => {
+export const addActiveEntity = (field = 'AGENCY', value = null) => {
   nextEntityId++
-  return {
+  let newEntity = {
     type: 'ADD_ACTIVE_AFFECTED_ENTITY',
     entity: {
       id: nextEntityId,
-      type: 'AGENCY'
+      type: field,
     }
   }
+  newEntity.entity[field.toLowerCase()] = value
+  return newEntity
 }
-
-// export const updateActiveEntity = () => {
-//   nextEntityId++
-//   return {
-//     type: 'UPDATE_ACTIVE_AFFECTED_ENTITY',
-//     entity: {
-//       id: nextEntityId,
-//       type: 'AGENCY'
-//     }
-//   }
-// }
 
 export const deleteActiveEntity = (entity) => {
   return {

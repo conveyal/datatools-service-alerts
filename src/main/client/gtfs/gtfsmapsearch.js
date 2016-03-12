@@ -67,6 +67,7 @@ export default class GtfsMapSearch extends React.Component {
         onStopClick={this.props.onStopClick}
         onRouteClick={this.props.onRouteClick}
         stops={displayedStops}
+        popupAction={this.props.popupAction}
       />
     </div>
     )

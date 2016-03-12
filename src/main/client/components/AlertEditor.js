@@ -146,7 +146,7 @@ export default class AlertEditor extends React.Component {
                           />
                         })}
                         <Button
-                          onClick={(evt) => this.props.onAddEntityClick()}
+                          onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0].id)}
                           className='pull-right'>Add</Button>
                       </Col>
                     </Row>
@@ -158,6 +158,9 @@ export default class AlertEditor extends React.Component {
             <Col xs={6}>
               <GtfsMapSearch 
                 feeds={this.props.editableFeeds}
+                onStopClick={this.props.onStopClick}
+                onRouteClick={this.props.onRouteClick}
+                popupAction='Add'
               />
             </Col>
 

@@ -31,6 +31,7 @@ export default class AlertsViewer extends React.Component {
                 feeds={this.props.editableFeeds}
                 onStopClick={this.props.onStopClick}
                 onRouteClick={this.props.onRouteClick}
+                popupAction='Create Alert for'
               />
             </Col>
           </Row>

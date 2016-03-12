@@ -9,6 +9,7 @@ import NoAccessScreen from '../components/NoAccessScreen'
 import ActiveAlertEditor from './ActiveAlertEditor'
 
 import { createAlert } from '../actions/alerts'
+import { addActiveEntity } from '../actions/activeAlert'
 import { userLoggedIn } from '../actions/user'
 
 import config from '../config'
@@ -60,7 +61,10 @@ class App extends React.Component {
         {this.props.user === null
           ? <NoAccessScreen />
           : this.props.activeAlert !== null
-            ? <ActiveAlertEditor />
+            ? <ActiveAlertEditor 
+              onStopClick={this.props.editorStopClick}
+              onRouteClick={this.props.editorRouteClick}
+            />
             : <AlertsViewer
               editableFeeds={this.props.editableFeeds}
               onStopClick={this.props.onStopClick}
@@ -84,7 +88,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     userLoggedIn: (user, projects) => dispatch(userLoggedIn(user, projects)),
     onStopClick: (stop) => dispatch(createAlert(stop)),
-    onRouteClick: (route) => dispatch(createAlert(route))
+    onRouteClick: (route) => dispatch(createAlert(route)),
+    editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
+    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route))
   }
 }
 

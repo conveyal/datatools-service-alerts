@@ -129,7 +129,7 @@ export default class GtfsMap extends React.Component {
                       <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick('STOP', stop)}>Create Alert for {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -151,7 +151,7 @@ export default class GtfsMap extends React.Component {
                       <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -171,7 +171,7 @@ export default class GtfsMap extends React.Component {
                       <li><strong>ID:</strong> {route.route_id}</li>
                       <li><strong>Agency:</strong> {feedMap[route.feed_id]}</li>
                     </ul>
-                    <Button href="#" onClick={() => this.props.onRouteClick(route)}>Create Alert for {route.route_id}</Button>
+                    <Button href="#" onClick={() => this.props.onRouteClick(route)}>{this.props.popupAction} {route.route_id}</Button>
                   </div>
                 </Popup>
               </GeoJson>

@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     effectChanged: (effect) => dispatch(setActiveEffect(effect)),
     startChanged: (start) => dispatch(setActiveStart(start)),
     endChanged: (end) => dispatch(setActiveEnd(end)),
-    onAddEntityClick: () => dispatch(addActiveEntity()),
+    onAddEntityClick: (type, value) => dispatch(addActiveEntity(type, value)),
     onDeleteEntityClick: (entity) => dispatch(deleteActiveEntity(entity)),
     entityUpdated: (entity, field, value) => dispatch(updateActiveEntity(entity, field, value))
   }
