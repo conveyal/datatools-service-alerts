@@ -254,7 +254,7 @@ class RouteSelector extends React.Component {
             else if (evt == null)
               this.props.entityUpdated(this.props.entity, "ROUTE", null)
           }}
-          route={this.state.route ? {'value': this.state.route.route_id, 'label': `(${feedMap[this.state.route.feed_id]}) ${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (route)`} : ''}
+          value={this.state.route ? {'value': this.state.route.route_id, 'label': `(${feedMap[this.state.route.feed_id]}) ${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (route)`} : ''}
         />
       </div>
     )
@@ -288,7 +288,7 @@ class StopSelector extends React.Component {
             else if (evt == null)
               this.props.entityUpdated(this.props.entity, "STOP", null)
           }}
-          stop={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `(${feedMap[this.state.stop.feed_id]}) ${this.state.stop.stop_name}`} : ''}
+          value={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `(${feedMap[this.state.stop.feed_id]}) ${this.state.stop.stop_name}`} : ''}
         />
         
       </div>

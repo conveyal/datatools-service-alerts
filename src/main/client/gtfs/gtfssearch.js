@@ -28,7 +28,7 @@ export default class GtfsSearch extends React.Component {
   state = {
     stops: [],
     routes: [],
-    value: this.props.stop
+    value: this.props.value
   };
 
   cacheOptions (options) {
