@@ -149,7 +149,12 @@ export default class AffectedEntity extends React.Component {
                   />
                   <div style={indent}>
                     <span><i>Refine by Route:</i></span>
-                    <RouteSelector />
+                    <RouteSelector 
+                      feeds={this.props.feeds} 
+                      route={this.props.entity.route}
+                      entityUpdated={this.props.entityUpdated}
+                      entity={this.props.entity}
+                    />
                   </div>
                 </div>
               )
@@ -157,7 +162,12 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Route:</b></span>
-                  <RouteSelector />
+                  <RouteSelector 
+                    feeds={this.props.feeds} 
+                    route={this.props.entity.route}
+                    entityUpdated={this.props.entityUpdated}
+                    entity={this.props.entity}
+                  />
                   <div style={indent}>
                     <span><i>Refine by Stop:</i></span>
                     <StopSelector 
@@ -222,22 +232,25 @@ class ModeSelector extends React.Component {
 }
 
 class RouteSelector extends React.Component {
-
+  state = {
+    route: this.props.route
+  };
   render () {
     var routes = []
     return (
       <div>
-        <Input
-          type="select"
+        <GtfsSearch 
+          feeds={this.props.feeds}
+          entities={['routes']}
           onChange={(evt) => {
-            // this.props.entityModeChanged(this.props.entity, evt.target.value)
+            console.log(this.state.value)
+            if (typeof evt !== 'undefined' && evt !== null)
+              this.props.entityUpdated(this.props.entity, "ROUTE", evt.route)
+            else if (evt == null)
+              this.props.entityUpdated(this.props.entity, "ROUTE", null)
           }}
-          //value={this.props.entity.type}
-        >
-          {routes.map((route) => {
-            return <option value={route.id}>{route.name}</option>
-          })}
-        </Input>
+          route={this.state.route ? {'value': this.state.route.route_id, 'label': `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`} : ''}
+        />
       </div>
     )
   }
@@ -262,6 +275,7 @@ class StopSelector extends React.Component {
       <div>
         <GtfsSearch 
           feeds={this.props.feeds}
+          entities={['stops']}
           onChange={(evt) => {
             console.log(this.state.value)
             if (typeof evt !== 'undefined' && evt !== null)

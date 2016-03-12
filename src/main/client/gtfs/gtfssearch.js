@@ -27,6 +27,7 @@ export default class GtfsSearch extends React.Component {
 
   state = {
     stops: [],
+    routes: [],
     value: this.props.stop
   };
 
@@ -58,9 +59,36 @@ export default class GtfsSearch extends React.Component {
       map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
       return map;
     })
-    const getOptions = (input) => {
+
+    const getStops = (input, callback) => {
       const feedIds = this.props.feeds.map(feed => feed.id)
+      const entities = typeof this.props.entities !== 'undefined' ? this.props.entities : ['routes', 'stops']
+      console.log(entities)
+      // var options;
       const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
+      return fetch(url)
+        .then((response) => {
+          console.log('fetch stops');
+          // console.log(response)
+          // console.log(response.json())
+          // this.state.stops = response.json()
+          return response.json() // .map(stop => ({value: stop.stop_id, label: stop.stop_name}))
+        })
+        .then((json) => {
+          this.setState(Object.assign({}, this.state, { stops: stopOptions }))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name} (stop)`}))
+          console.log(json)
+          console.log(stopOptions)
+          return { options: stopOptions }
+        })
+        // .then((options) => callback(input, options))
+      }
+    const getRoutes = (input, options) => {
+      console.log('now fetch routes');
+      console.log('stop options' + options)
+      console.log(options)
+      const feedIds = this.props.feeds.map(feed => feed.id)
+      const url = input ? `/api/routes?name=${input}&feed=${feedIds.toString()}` : `/api/routes?feed=${feedIds.toString()}`
       return fetch(url)
         .then((response) => {
           // console.log(response)
@@ -69,12 +97,76 @@ export default class GtfsSearch extends React.Component {
           return response.json() // .map(stop => ({value: stop.stop_id, label: stop.stop_name}))
         })
         .then((json) => {
+          this.setState(Object.assign({}, this.state, { routes: routeOptions }))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`}))
+          console.log(json)
+          console.log(options)
+          console.log(routeOptions)
+          // option.options = [
+          //   ...option.options,
+          //   routeOptions
+          // ]
+          return { options: routeOptions }
+        })
+      }
+    const getOptions = (input) => {
+      
+      const entities = typeof this.props.entities !== 'undefined' ? this.props.entities : ['routes', 'stops']
+
+      // TODO: get this working... instead of what's below
+      if (entities.length === 1 && entities[0] === 'stops'){
+        console.log('getting stops')
+        return getStops(input)
+      }
+      else if (entities.length === 1 && entities[0] === 'routes'){
+        console.log('getting routes')
+        return getRoutes(input)
+      }
+      else{
+        const feedIds = this.props.feeds.map(feed => feed.id)
+      console.log(entities)
+      var options = []
+      const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
+      return fetch(url)
+        .then((response) => {
+          console.log('fetch stops');
+          // console.log(response)
+          // console.log(response.json())
+          // this.state.stops = response.json()
+          return response.json() // .map(stop => ({value: stop.stop_id, label: stop.stop_name}))
+        })
+        .then((json) => {
           this.setState(Object.assign({}, this.state, { stops: stopOptions }))
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name}`}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name} (stop)`}))
           console.log(json)
           console.log(stopOptions)
-          return { options: stopOptions }
-        })
+          options = [...stopOptions]
+          // return { options: stopOptions }
+        }).then(() => {
+          console.log('now fetch routes');
+          const url = input ? `/api/routes?name=${input}&feed=${feedIds.toString()}` : `/api/routes?feed=${feedIds.toString()}`
+          return fetch(url)
+            .then((response) => {
+              // console.log(response)
+              // console.log(response.json())
+              // this.state.stops = response.json()
+              return response.json() // .map(stop => ({value: stop.stop_id, label: stop.stop_name}))
+            })
+            .then((json) => {
+              this.setState(Object.assign({}, this.state, { routes: routeOptions }))
+              const routeOptions = json.map(route => ({route, value: route.route_id, label: `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`}))
+              console.log(json)
+              console.log(routeOptions)
+              // option.options = [
+              //   ...option.options,
+              //   routeOptions
+              // ]
+              return { options: [...options,...routeOptions] }
+          })
+        });
+      }
+
+      
     }
     const handleChange = (input) => {
       this.onChange(input)
@@ -87,7 +179,7 @@ export default class GtfsSearch extends React.Component {
     const selectStyle = {
       'z-index': '2000'
     }
-    const placeHolder = 'Begin typing to search for stops...'
+    const placeHolder = 'Begin typing to search for ' + this.props.entities.join(' or ') + '...'
     return (
     <Select.Async
       autoload={true}

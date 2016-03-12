@@ -60,6 +60,7 @@ export default class GtfsMapSearch extends React.Component {
       <GtfsSearch 
         feeds={this.props.feeds}
         onChange={handleStopSelection}
+        entities={['stops', 'routes']}
       />
       <GtfsMap 
         feeds={this.props.feeds}
