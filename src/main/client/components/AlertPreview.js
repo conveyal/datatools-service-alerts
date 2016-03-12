@@ -34,11 +34,18 @@ export default class AlertPreview extends React.Component {
         <p>
           <i>{moment(this.props.alert.start).format('MMM Do YYYY, h:mm:ssa')} to {moment(this.props.alert.end).format('MMM Do YYYY, h:mm:ssa')} </i>
           {this.props.alert.published
-            ? <Label className='pull-right'>published</Label>
-            : <Label className='pull-right'>unpublished</Label>}
+            ? <Label bsStyle="success" className='pull-right'>published</Label>
+            : <Label bsStyle="warning" className='pull-right'>unpublished</Label>
+          }
         </p>
         <p>{this.props.alert.description}</p>
         <p>URL: <a href={this.props.alert.url} target="_blank">{this.props.alert.url}</a></p>
+        <p>
+        {this.props.alert.affectedEntities.length
+          ? <Label bsStyle="danger" className='pull-right'>{this.props.alert.affectedEntities.length} affected service(s)</Label>
+          : <Label className='pull-right'>General alert</Label>
+        }
+        </p>
       </Panel>
     )
   }
