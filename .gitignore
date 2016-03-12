@@ -11,3 +11,4 @@ application.conf
 target/
 .java-version
 datatools.iml
+src/main/client/config.js
