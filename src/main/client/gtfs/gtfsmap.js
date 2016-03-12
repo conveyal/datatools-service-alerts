@@ -163,7 +163,7 @@ export default class GtfsMap extends React.Component {
             const route = pattern.associatedRoutes[0]
             const routeName = route.route_short_name !== null ? route.route_short_name : route.route_long_name
             return (
-              <GeoJson data={{type: 'LineString', coordinates: pattern.geometry.coordinates}} >
+              <GeoJson color={route.route_color !== null ? '#' + route.route_color : 'blue' } data={{type: 'LineString', coordinates: pattern.geometry.coordinates}} >
                 <Popup>
                   <div>
                     <h3>{routeName}</h3>
