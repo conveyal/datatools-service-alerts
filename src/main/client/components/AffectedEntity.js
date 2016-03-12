@@ -236,6 +236,11 @@ class RouteSelector extends React.Component {
     route: this.props.route
   };
   render () {
+    console.log('render route ent', this.props.route)
+    const feedMap = this.props.feeds.reduce((map, obj) => {
+      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
+      return map;
+    })
     var routes = []
     return (
       <div>
@@ -249,7 +254,7 @@ class RouteSelector extends React.Component {
             else if (evt == null)
               this.props.entityUpdated(this.props.entity, "ROUTE", null)
           }}
-          route={this.state.route ? {'value': this.state.route.route_id, 'label': `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`} : ''}
+          route={this.state.route ? {'value': this.state.route.route_id, 'label': `(${feedMap[this.state.route.feed_id]}) ${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (route)`} : ''}
         />
       </div>
     )

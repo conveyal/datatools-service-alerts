@@ -3,16 +3,19 @@
 let nextAlertId = 0
 let nextStopEntityId = 100
 
-export const createAlert = (initialStop) => {
+export const createAlert = (entity) => {
   nextAlertId++
   let entities = []
-  if (initialStop) {
+  if (entity) {
     nextStopEntityId++
-    entities.push({
+    let type = typeof entity.stop_id !== 'undefined' ? 'STOP' : 'ROUTE'
+    let newEntity = {
       id: nextStopEntityId,
-      type: 'STOP',
-      stop: initialStop
-    })
+      type: type
+    }
+    const typeKey = type.toLowerCase()
+    newEntity[typeKey] = entity
+    entities.push(newEntity)
   }
   return {
     type: 'CREATE_ALERT',

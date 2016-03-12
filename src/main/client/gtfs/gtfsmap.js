@@ -7,7 +7,7 @@ import { Panel, Grid, Row, Col, Button } from 'react-bootstrap'
 
 import { PureComponent, shallowEqual } from 'react-pure-render'
 
-import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leaflet'
+import { Map, Marker, Popup, TileLayer, Polyline, MapControl, GeoJson } from 'react-leaflet'
 
 import config from '../config'
 
@@ -30,6 +30,8 @@ export default class GtfsMap extends React.Component {
     const position = [37.779871, -122.426966]
     this.state = {
       stops: [],
+      routes: [],
+      patterns: [],
       message: '',
       position: position,
       map: {}
@@ -91,6 +93,7 @@ export default class GtfsMap extends React.Component {
         const minLng = bounds._southWest.lng
 
         this.getStopsForBox(maxLat, maxLng, minLat, minLng)
+        this.getRoutesForBox(maxLat, maxLng, minLat, minLng)
       }
       else{
         this.setState(Object.assign({}, this.state, { message: 'zoom in for stops' }))
@@ -126,7 +129,7 @@ export default class GtfsMap extends React.Component {
                       <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>Create Alert for {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick('STOP', stop)}>Create Alert for {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -155,6 +158,26 @@ export default class GtfsMap extends React.Component {
             )
           }
         })}
+        {this.state.patterns.map((pattern, index) => {
+          if (typeof pattern !== 'undefined') {
+            const route = pattern.associatedRoutes[0]
+            const routeName = route.route_short_name !== null ? route.route_short_name : route.route_long_name
+            return (
+              <GeoJson data={{type: 'LineString', coordinates: pattern.geometry.coordinates}} >
+                <Popup>
+                  <div>
+                    <h3>{routeName}</h3>
+                    <ul>
+                      <li><strong>ID:</strong> {route.route_id}</li>
+                      <li><strong>Agency:</strong> {feedMap[route.feed_id]}</li>
+                    </ul>
+                    <Button href="#" onClick={() => this.props.onRouteClick(route)}>Create Alert for {route.route_id}</Button>
+                  </div>
+                </Popup>
+              </GeoJson>
+            )
+          }
+        })}
       </Map>
     </div>
     )
@@ -170,6 +193,22 @@ export default class GtfsMap extends React.Component {
         .then((json) => {
           console.log(json)
           this.setState(Object.assign({}, this.state, { stops: json }))
+          return json
+        })
+  }
+  getRoutesForBox(maxLat, maxLng, minLat, minLng){
+    const feedIds = this.props.feeds.map(feed => feed.id)
+    // console.log(feedIds)
+    return fetch(`/api/routes?max_lat=${maxLat}&max_lon=${maxLng}&min_lat=${minLat}&min_lon=${minLng}&feed=${feedIds.toString()}`)
+        .then((response) => {
+          return response.json()
+        })
+        .then((json) => {
+          console.log(json)
+          const routes = json.map(p => p.associatedRoutes[0])
+          console.log(routes)
+          this.setState(Object.assign({}, this.state, { routes: routes, patterns: json }))
+          // this.setState(Object.assign({}, this.state, {  }))
           return json
         })
   }

@@ -64,6 +64,7 @@ class App extends React.Component {
             : <AlertsViewer
               editableFeeds={this.props.editableFeeds}
               onStopClick={this.props.onStopClick}
+              onRouteClick={this.props.onRouteClick}
             />
         }
       </div>
@@ -82,7 +83,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     userLoggedIn: (user, projects) => dispatch(userLoggedIn(user, projects)),
-    onStopClick: (stop) => dispatch(createAlert(stop))
+    onStopClick: (stop) => dispatch(createAlert(stop)),
+    onRouteClick: (route) => dispatch(createAlert(route))
   }
 }
 

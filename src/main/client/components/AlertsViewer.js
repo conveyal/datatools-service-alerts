@@ -30,6 +30,7 @@ export default class AlertsViewer extends React.Component {
               <GtfsMapSearch 
                 feeds={this.props.editableFeeds}
                 onStopClick={this.props.onStopClick}
+                onRouteClick={this.props.onRouteClick}
               />
             </Col>
           </Row>

@@ -65,6 +65,7 @@ export default class GtfsMapSearch extends React.Component {
       <GtfsMap 
         feeds={this.props.feeds}
         onStopClick={this.props.onStopClick}
+        onRouteClick={this.props.onRouteClick}
         stops={displayedStops}
       />
     </div>
