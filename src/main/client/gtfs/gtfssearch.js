@@ -3,7 +3,7 @@ import $ from 'jquery'
 
 import fetch from 'isomorphic-fetch'
 
-import { Panel, Grid, Row, Col, Button } from 'react-bootstrap'
+import { Panel, Grid, Row, Col, Button, Glyphicon } from 'react-bootstrap'
 
 import { PureComponent, shallowEqual } from 'react-pure-render'
 
@@ -43,7 +43,9 @@ export default class GtfsSearch extends React.Component {
       console.log(this.state.value)
     }
   }
-
+  renderOption (option) {
+    return <span style={{ color: 'black' }}>{option.stop ? <Glyphicon glyph="map-marker" /> : <Glyphicon glyph="option-horizontal" />} {option.label} {option.link}</span>
+  }
   onChange (value) {
     this.setState({value})
     this.props.onChange && this.props.onChange(value && this.options[value.value])
@@ -76,7 +78,7 @@ export default class GtfsSearch extends React.Component {
         })
         .then((json) => {
           this.setState(Object.assign({}, this.state, { stops: stopOptions }))
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name} (stop)`}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name} (${feedMap[stop.feed_id]})`}))
           console.log(json)
           console.log(stopOptions)
           return { options: stopOptions }
@@ -98,7 +100,7 @@ export default class GtfsSearch extends React.Component {
         })
         .then((json) => {
           this.setState(Object.assign({}, this.state, { routes: routeOptions }))
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`}))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (${feedMap[route.feed_id]})`}))
           console.log(json)
           console.log(options)
           console.log(routeOptions)
@@ -137,7 +139,7 @@ export default class GtfsSearch extends React.Component {
         })
         .then((json) => {
           this.setState(Object.assign({}, this.state, { stops: stopOptions }))
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `(${feedMap[stop.feed_id]}) ${stop.stop_name} (stop)`}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name} (${feedMap[stop.feed_id]})`}))
           console.log(json)
           console.log(stopOptions)
           options = [...stopOptions]
@@ -154,7 +156,7 @@ export default class GtfsSearch extends React.Component {
             })
             .then((json) => {
               this.setState(Object.assign({}, this.state, { routes: routeOptions }))
-              const routeOptions = json.map(route => ({route, value: route.route_id, label: `(${feedMap[route.feed_id]}) ${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (route)`}))
+              const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (${feedMap[route.feed_id]})`}))
               console.log(json)
               console.log(routeOptions)
               // option.options = [
@@ -186,10 +188,11 @@ export default class GtfsSearch extends React.Component {
       cacheAsyncResults={false}
       filterOptions={false}
       minimumInput={1}
-      clearable={typeof this.props.clearable !== 'undefined' ? this.props.clearable : true}
+      clearable={this.props.clearable}
       placeholder={placeHolder}
       loadOptions={getOptions}
       value={this.state.value}
+      optionRenderer={this.renderOption}
       onChange={handleChange} />
     )
   }
