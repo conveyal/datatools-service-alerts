@@ -250,6 +250,7 @@ class RouteSelector extends React.Component {
       <div>
         <GtfsSearch 
           feeds={this.props.feeds}
+          clearable={false}
           entities={['routes']}
           onChange={(evt) => {
             console.log(this.state.value)
@@ -285,6 +286,7 @@ class StopSelector extends React.Component {
         <GtfsSearch 
           feeds={this.props.feeds}
           entities={['stops']}
+          clearable={false}
           onChange={(evt) => {
             console.log(this.state.value)
             if (typeof evt !== 'undefined' && evt !== null)

@@ -186,6 +186,7 @@ export default class GtfsSearch extends React.Component {
       cacheAsyncResults={false}
       filterOptions={false}
       minimumInput={1}
+      clearable={typeof this.props.clearable !== 'undefined' ? this.props.clearable : true}
       placeholder={placeHolder}
       loadOptions={getOptions}
       value={this.state.value}
