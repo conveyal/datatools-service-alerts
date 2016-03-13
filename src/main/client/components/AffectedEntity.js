@@ -148,6 +148,7 @@ export default class AffectedEntity extends React.Component {
                   <StopSelector 
                     feeds={this.props.feeds} 
                     stop={this.props.entity.stop}
+                    clearable={false}
                     entityUpdated={this.props.entityUpdated}
                     entity={this.props.entity}
                   />
@@ -169,6 +170,7 @@ export default class AffectedEntity extends React.Component {
                   <RouteSelector 
                     feeds={this.props.feeds} 
                     route={this.props.entity.route}
+                    clearable={false}
                     entityUpdated={this.props.entityUpdated}
                     entity={this.props.entity}
                   />
@@ -250,7 +252,7 @@ class RouteSelector extends React.Component {
       <div>
         <GtfsSearch 
           feeds={this.props.feeds}
-          clearable={false}
+          clearable={this.props.clearable}
           entities={['routes']}
           onChange={(evt) => {
             console.log(this.state.value)
@@ -286,7 +288,7 @@ class StopSelector extends React.Component {
         <GtfsSearch 
           feeds={this.props.feeds}
           entities={['stops']}
-          clearable={false}
+          clearable={this.props.clearable}
           onChange={(evt) => {
             console.log(this.state.value)
             if (typeof evt !== 'undefined' && evt !== null)
