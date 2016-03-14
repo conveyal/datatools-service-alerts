@@ -8,11 +8,18 @@ import { setActiveTitle, setActiveDescription, setActiveUrl, setActiveCause,
 
 import AlertEditor from '../components/AlertEditor'
 
+const agencyCompare = function(a, b) {
+  if (a.name < b.name)
+    return -1;
+  if (a.name > b.name)
+    return 1;
+  return 0;
+}
 const mapStateToProps = (state, ownProps) => {
   return {
     alert: state.activeAlert,
     activeFeeds: state.gtfsFilter.activeFeeds,
-    editableFeeds: state.projects.active.feeds
+    editableFeeds: state.projects.active.feeds.sort(agencyCompare)
   }
 }
 

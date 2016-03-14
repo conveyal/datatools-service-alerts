@@ -196,24 +196,17 @@ class AgencySelector extends React.Component {
     const getFeed = (id) => {
       return this.props.feeds.find((feed) => feed.id === id )
     }
-    var compare = function(a, b) {
-      if (a.name < b.name)
-        return -1;
-      if (a.name > b.name)
-        return 1;
-      return 0;
-    }
-
     return (
       <div>
         <Input
           type="select"
+          value={this.props.entity.agency && this.props.entity.agency.id}
           onChange={(evt) => {
             this.props.entityUpdated(this.props.entity, "AGENCY", getFeed(evt.target.value))
           }}
           //value={this.props.entity.type}
         >
-          {this.props.feeds.sort(compare).map((feed) => {
+          {this.props.feeds.map((feed) => {
             return <option key={feed.id} value={feed.id}>{feed.name}</option>
           })}
         </Input>
@@ -235,6 +228,7 @@ class ModeSelector extends React.Component {
       <div>
         <Input
           type="select"
+          value={this.props.entity.mode.gtfsType}
           onChange={(evt) => {
             this.props.entityUpdated(this.props.entity, "MODE", getMode(evt.target.value))
           }}
