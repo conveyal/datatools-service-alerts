@@ -72,22 +72,42 @@ export default class AlertEditor extends React.Component {
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
                 <Button onClick={(evt) => {
-                  var changes = {
-                    HeaderText: this.props.alert.title
+                  var json = {
+                    Id: this.props.alert.id,
+                    HeaderText: this.props.alert.title,
+                    DescriptionText: this.props.alert.description,
+                    Url: this.props.alert.url,
+                    Cause: this.props.alert.cause,
+                    Effect: this.props.alert.effect,
+                    Published: 'No',
+                    StartDateTime: this.props.alert.start,
+                    EndDateTime: this.props.alert.end,
+                    ServiceAlertEntities: []
                   }
-                  console.log('saving', this.props.alert.id, changes)
+                  json.ServiceAlertEntities.push({
+                    Id: 6,
+                    AlertId: 5,
+                    AgencyId: "MT",
+                    RouteId: null,
+                    RouteType: null,
+                    StopId: "1",
+                    TripId: null,
+                    ServiceAlertTrips: []
+                  })
+                  console.log('saving', this.props.alert.id, json, JSON.stringify(json))
                   fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+this.props.alert.id, {
                     method: 'put',
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(changes)
+                    body: JSON.stringify(json)
                   }).then((res) => {
                     console.log('status='+res.status)
+                    console.log(res.json());
+                    this.props.onSaveClick(this.props.alert)
                   })
 
-                  //this.props.onSaveClick(this.props.alert)
                 }}>Save</Button>
                 <Button onClick={(evt) => {
                   this.props.onPublishClick(this.props.alert, !this.props.alert.published)
@@ -166,7 +186,7 @@ export default class AlertEditor extends React.Component {
                             </Button>
                           </Col>
                           <Col xs={7}>
-                            <GtfsSearch 
+                            <GtfsSearch
                               feeds={this.props.editableFeeds}
                               placeholder='Add stop/route'
                               entities={['stops', 'routes']}
