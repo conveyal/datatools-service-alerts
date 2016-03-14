@@ -37,9 +37,9 @@ class App extends React.Component {
       return this.dataManager.getProjectsAndFeeds(user)
     })
 
-    var alertsPromise = fetch(config.rtdApi).then((res) => {
+    /*var alertsPromise = fetch(config.rtdApi).then((res) => {
       return res.json()
-    })
+    })*/
 
     Promise.all([loginPromise, projectsPromise]).then((results) => {
       let user = results[0]
@@ -53,6 +53,18 @@ class App extends React.Component {
   }
 
   render () {
+
+    let canAccess = false, noAccessReason
+    if(this.props.user === null) {
+      noAccessReason = 'NOT_LOGGED_ID'
+    }
+    else if(!this.props.user.permissions.hasProjectPermission(config.activeProjectId, 'edit-alert')) {
+      noAccessReason = 'INSUFFICIENT_PERMISSIONS'
+    }
+    else {
+      canAccess = true
+    }
+
     return (
       <div>
         <DatatoolsNavbar
@@ -65,8 +77,8 @@ class App extends React.Component {
           logoutHandler={() => { this.auth0.logout() }}
           resetPasswordHandler={() => { this.auth0.resetPassword() }}
         />
-        {this.props.user === null
-          ? <NoAccessScreen />
+        {!canAccess
+          ? <NoAccessScreen reason={noAccessReason} />
           : this.props.activeAlert !== null
             ? <ActiveAlertEditor
               onStopClick={this.props.editorStopClick}
