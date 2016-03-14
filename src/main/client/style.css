@@ -1,5 +1,5 @@
 @import url('~react-select/dist/react-select.css');
 
-.Select {
+.Select-menu-outer {
   z-index: 2000;
 }
