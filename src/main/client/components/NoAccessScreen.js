@@ -14,7 +14,13 @@ export default class NoAccessScreen extends React.Component {
         <Grid>
           <Row>
             <Col xs={12}>
-              You must be logged in to access this area.
+              {(() => {
+                switch (this.props.reason) {
+                  case 'NOT_LOGGED_ID': return <i>You must be logged in to access this area.</i>
+                  case 'INSUFFICIENT_PERMISSIONS': return <i>This user does not have permission to access this area.</i>
+                  default: return <i>Unable to Access Module</i>
+                }
+              })()}
             </Col>
           </Row>
         </Grid>

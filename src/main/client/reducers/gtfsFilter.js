@@ -11,7 +11,19 @@ const gtfsFilter = (state = {
     case 'USER_LOGGED_IN':
       let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
       if(activeIndex !== -1) {
-        let validatedFeeds = action.projects[activeIndex].feeds.filter((feed) => {
+        let userFeeds = []
+        if(action.user.permissions.isProjectAdmin(config.activeProjectId)) {
+          userFeeds = action.projects[activeIndex].feeds
+        }
+        else if(action.user.permissions.hasProjectPermission(config.activeProjectId, 'edit-alert')) {
+          const permission = action.user.permissions.getProjectPermission(config.activeProjectId, 'edit-alert')
+          let userFeedIds = permission.feeds || action.user.permissions.getProjectDefaultFeeds(config.activeProjectId)
+          userFeeds = action.projects[activeIndex].feeds.filter((feed) => {
+            return userFeedIds.indexOf(feed.id) !== -1
+          })
+        }
+        //const permission = t
+        let validatedFeeds = userFeeds.filter((feed) => {
           return feed.latestVersionId !== undefined
         })
         return update(state, {

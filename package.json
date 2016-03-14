@@ -35,7 +35,7 @@
     "react-bootstrap-datetimepicker": "^0.0.22",
     "moment": "^2.11.2",
     "react-addons-update": "^0.14.7",
-    "datatools-common": "^0.1.0"
+    "datatools-common": "^0.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
