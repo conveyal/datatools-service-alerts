@@ -59,7 +59,7 @@ class App extends React.Component {
           title={config.title}
           managerUrl={config.managerUrl}
           editorUrl={config.editorUrl}
-          userAdminUrl='www.conveyal.com'
+          userAdminUrl={config.userAdminUrl}
           username={ this.props.user ? this.props.user.profile.email : null }
           loginHandler={() => { console.log('login'); this.handleLogin(this.auth0.loginViaLock()) }}
           logoutHandler={() => { this.auth0.logout() }}
