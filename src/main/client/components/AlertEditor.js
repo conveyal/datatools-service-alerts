@@ -158,10 +158,10 @@ export default class AlertEditor extends React.Component {
                       <Col xs={12}>
                         <Row style={{marginBottom: '15px'}}>
                           <Col xs={5}>
-                            <Button style={{marginRight: '5px'}} onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0].id)}>
+                            <Button style={{marginRight: '5px'}} onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0])}>
                               Add Agency
                             </Button>
-                            <Button onClick={(evt) => this.props.onAddEntityClick('MODE', '0')}>
+                            <Button onClick={(evt) => this.props.onAddEntityClick('MODE', {gtfsType: 0, name: 'Tram/LRT'})}>
                               Add Mode
                             </Button>
                           </Col>
