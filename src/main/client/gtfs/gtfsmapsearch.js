@@ -13,16 +13,6 @@ import GtfsMap from './gtfsmap'
 import GtfsSearch from './gtfssearch'
 
 export default class GtfsMapSearch extends React.Component {
-  static propTypes = {
-    attribution: PropTypes.string,
-    centerCoordinates: PropTypes.arrayOf(PropTypes.number),
-    geojson: PropTypes.arrayOf(PropTypes.object).isRequired,
-    markers: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onZoom: PropTypes.func,
-    transitive: PropTypes.object,
-    url: PropTypes.string.isRequired,
-    zoom: PropTypes.number
-  };
 
   constructor(props) {
     super(props)
@@ -71,13 +61,13 @@ export default class GtfsMapSearch extends React.Component {
     console.log(displayedStops)
     return (
     <div>
-      <GtfsSearch 
+      <GtfsSearch
         feeds={this.props.feeds}
         placeholder={this.props.placeholder}
         onChange={handleStopSelection}
         entities={['stops', 'routes']}
       />
-      <GtfsMap 
+      <GtfsMap
         feeds={this.props.feeds}
         onStopClick={this.props.onStopClick}
         onRouteClick={this.props.onRouteClick}

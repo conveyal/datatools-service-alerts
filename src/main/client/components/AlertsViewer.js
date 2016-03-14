@@ -5,12 +5,14 @@ import { Grid, Row, Col, Button } from 'react-bootstrap'
 import CreateAlert from '../containers/CreateAlert'
 import VisibleAlertsList from '../containers/VisibleAlertsList'
 
+import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 
 export default class AlertsViewer extends React.Component {
 
   constructor (props) {
     super(props)
+    console.log("AV activeFeeds", this.props.activeFeeds);
   }
 
   render () {
@@ -27,8 +29,9 @@ export default class AlertsViewer extends React.Component {
               <VisibleAlertsList />
             </Col>
             <Col xs={6}>
-              <GtfsMapSearch 
-                feeds={this.props.editableFeeds}
+              <GlobalGtfsFilter />
+              <GtfsMapSearch
+                feeds={this.props.activeFeeds}
                 onStopClick={this.props.onStopClick}
                 onRouteClick={this.props.onRouteClick}
                 popupAction='Create Alert for'

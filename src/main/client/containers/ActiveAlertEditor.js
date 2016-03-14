@@ -11,6 +11,7 @@ import AlertEditor from '../components/AlertEditor'
 const mapStateToProps = (state, ownProps) => {
   return {
     alert: state.activeAlert,
+    activeFeeds: state.gtfsFilter.activeFeeds,
     editableFeeds: state.projects.active.feeds
   }
 }

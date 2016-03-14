@@ -61,12 +61,12 @@ class App extends React.Component {
         {this.props.user === null
           ? <NoAccessScreen />
           : this.props.activeAlert !== null
-            ? <ActiveAlertEditor 
+            ? <ActiveAlertEditor
               onStopClick={this.props.editorStopClick}
               onRouteClick={this.props.editorRouteClick}
             />
             : <AlertsViewer
-              editableFeeds={this.props.editableFeeds}
+              activeFeeds={this.props.activeFeeds}
               onStopClick={this.props.onStopClick}
               onRouteClick={this.props.onRouteClick}
             />
@@ -80,7 +80,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
     activeAlert: state.activeAlert,
-    editableFeeds: state.projects.active ? state.projects.active.feeds : []
+    activeFeeds: state.gtfsFilter.activeFeeds
   }
 }
 

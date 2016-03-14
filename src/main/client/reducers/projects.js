@@ -6,16 +6,17 @@ const projects = (state = {
 }, action) => {
   switch (action.type) {
     case 'USER_LOGGED_IN':
-      var active = null
-      for(var project of action.projects) {
+      //var active = null
+      /*for(var project of action.projects) {
         if(project.id === config.activeProjectId) {
           active = project
         }
-      }
+      }*/
+      let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
 
       return {
         all: action.projects,
-        active
+        active: activeIndex !== -1 ? action.projects[activeIndex] : null
       }
     default:
       return state

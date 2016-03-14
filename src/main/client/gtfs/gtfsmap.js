@@ -14,19 +14,10 @@ import config from '../config'
 import Select from 'react-select'
 
 export default class GtfsMap extends React.Component {
-  static propTypes = {
-    attribution: PropTypes.string,
-    centerCoordinates: PropTypes.arrayOf(PropTypes.number),
-    geojson: PropTypes.arrayOf(PropTypes.object).isRequired,
-    markers: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onZoom: PropTypes.func,
-    transitive: PropTypes.object,
-    url: PropTypes.string.isRequired,
-    zoom: PropTypes.number
-  };
 
   constructor(props) {
     super(props)
+
     const position = [37.779871, -122.426966]
     this.state = {
       stops: [],
@@ -39,20 +30,25 @@ export default class GtfsMap extends React.Component {
   }
 
   componentDidMount() {
-    // this.fetchUsers()
-    console.log(this.props)
+    //console.log(this.props)
+  }
 
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.feeds.length !== this.props.length) {
+      this.refreshGtfsElements(nextProps.feeds)
+    }
   }
 
   render() {
-    // console.log(this.props.stops)
-    // console.log(this.state.stops)
+    //console.log(this.props.stops)
+    //console.log(this.state.stops)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
     var feedMap = this.props.feeds.reduce((map, obj) => {
       map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
       return map;
-    })
+    }, {})
 
     const handleSelection = (input) => {
       this.onChange(input)
@@ -71,45 +67,21 @@ export default class GtfsMap extends React.Component {
     // msTransition: 'all' // 'ms' is the only lowercase vendor prefix
     }
     const layerAddHandler = (e) => {
-      console.log(e)
       if (this.props.stops.length === 1 && typeof e.layer !== 'undefined' && typeof e.layer._popup !== 'undefined'){
         e.layer.openPopup()
       }
     }
-    const moveHandler = (zoom) => {
-      const newZoom = zoom.target._zoom
-      console.log(newZoom)
-      if (newZoom > 13 ){
-        this.setState(Object.assign({}, this.state, { message: '' }))
-        const bounds = zoom.target.getBounds()
-        // const maxLat = bounds._northEast.lat
-        // const maxLng = bounds._northEast.lng
-        // const minLat = bounds._southWest.lat
-        // const minLng = bounds._southWest.lng
 
-        const maxLat = bounds._southWest.lat
-        const maxLng = bounds._northEast.lng
-        const minLat = bounds._northEast.lat
-        const minLng = bounds._southWest.lng
-
-        this.getStopsForBox(maxLat, maxLng, minLat, minLng)
-        this.getRoutesForBox(maxLat, maxLng, minLat, minLng)
-      }
-      else{
-        this.setState(Object.assign({}, this.state, { message: 'zoom in for stops' }))
-      }
-
-      // console.log(something)
-    }
     return (
     <div>
       <div>&nbsp;</div>
       <Map
+        ref='map'
         style={mapStyle}
         center={this.state.position}
         zoom={13}
-        onLeafletZoomend={moveHandler}
-        onLeafletMoveend={moveHandler}
+        onLeafletZoomend={() => this.refreshGtfsElements()}
+        onLeafletMoveend={() => this.refreshGtfsElements()}
         onLeafletLayeradd={layerAddHandler}
         className='Gtfs-Map'
         >
@@ -215,6 +187,7 @@ export default class GtfsMap extends React.Component {
     })
   }
 }
+
 // class StopPopup extends React.Component {
 //   constructor(props) {
 //     super(props)
@@ -245,4 +218,3 @@ export default class GtfsMap extends React.Component {
 //     )
 //   }
 // }
-
