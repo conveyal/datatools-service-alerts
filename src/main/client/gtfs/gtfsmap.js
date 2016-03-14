@@ -35,7 +35,7 @@ export default class GtfsMap extends React.Component {
 
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.feeds.length !== this.props.length) {
+    if(nextProps.feeds.length !== this.props.feeds.length) {
       this.refreshGtfsElements(nextProps.feeds)
     }
   }
