@@ -14,7 +14,7 @@ export default class AlertPreview extends React.Component {
       <Panel collapsible header={
         <Row>
           <Col xs={8}>
-            <strong>{this.props.alert.title}</strong>
+            <strong>{this.props.alert.title} (#{this.props.alert.id})</strong>
           </Col>
           <Col xs={4}>
             <ButtonGroup className='pull-right'>

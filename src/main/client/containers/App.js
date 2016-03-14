@@ -37,18 +37,17 @@ class App extends React.Component {
       return this.dataManager.getProjectsAndFeeds(user)
     })
 
-    /*var alertsPromise = fetch(config.rtdApi).then((res) => {
+    var alertsPromise = fetch(config.rtdApi).then((res) => {
       return res.json()
-    })*/
+    })
 
-    Promise.all([loginPromise, projectsPromise]).then((results) => {
+    Promise.all([loginPromise, projectsPromise, alertsPromise]).then((results) => {
       let user = results[0]
       let projects = results[1]
 
-      //let rtdAlerts = results[2]
-      //console.log('got api alerts', rtdAlerts)
+      let rtdAlerts = results[2]
       this.props.userLoggedIn(user, projects)
-      //this.props.receivedRtdAlerts(rtdAlerts)
+      this.props.receivedRtdAlerts(rtdAlerts)
     })
   }
 
