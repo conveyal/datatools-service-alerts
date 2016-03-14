@@ -5,7 +5,7 @@ dist
 coverage
 .idea
 server_config.js
-app/config.js
+src/main/client/config.js
 src/main/resources/public
 application.conf
 target/
