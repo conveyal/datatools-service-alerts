@@ -179,7 +179,7 @@ export default class GtfsSearch extends React.Component {
       {value: 'one', label: 'One'},
       {value: 'two', label: 'Two'}
     ]
-    const placeHolder = 'Begin typing to search for ' + this.props.entities.join(' or ') + '...'
+    const placeholder = 'Begin typing to search for ' + this.props.entities.join(' or ') + '...'
     return (
     <Select.Async
       autoload={true}
@@ -187,7 +187,7 @@ export default class GtfsSearch extends React.Component {
       filterOptions={false}
       minimumInput={1}
       clearable={this.props.clearable}
-      placeholder={this.props.placeholder || placeHolder}
+      placeholder={this.props.placeholder || placeholder}
       loadOptions={getOptions}
       value={this.state.value}
       optionRenderer={this.renderOption}
