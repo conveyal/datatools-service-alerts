@@ -26,6 +26,23 @@ const alerts = (state = [], action) => {
         ]
       }
 
+    case 'RECEIVED_RTD_ALERTS':
+      console.log('RECEIVED_RTD_ALERTS', action.rtdAlerts)
+      return action.rtdAlerts.map((rtdAlert) => {
+        return {
+          id: rtdAlert.Id,
+          title: rtdAlert.HeaderText,
+          description: rtdAlert.DescriptionText,
+          cause: rtdAlert.Cause,
+          effect: rtdAlert.Effect,
+          url: rtdAlert.Url,
+          start: rtdAlert.StartDateTime*1000,
+          end: rtdAlert.EndDateTime*1000,
+          published: rtdAlert.Published === "Yes",
+          affectedEntities: []
+        }
+      })
+
     default:
       return state
   }

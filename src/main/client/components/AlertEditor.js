@@ -71,7 +71,24 @@ export default class AlertEditor extends React.Component {
 
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
-                <Button onClick={(evt) => this.props.onSaveClick(this.props.alert)}>Save</Button>
+                <Button onClick={(evt) => {
+                  var changes = {
+                    HeaderText: this.props.alert.title
+                  }
+                  console.log('saving', this.props.alert.id, changes)
+                  fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+this.props.alert.id, {
+                    method: 'put',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(changes)
+                  }).then((res) => {
+                    console.log('status='+res.status)
+                  })
+
+                  //this.props.onSaveClick(this.props.alert)
+                }}>Save</Button>
                 <Button onClick={(evt) => {
                   this.props.onPublishClick(this.props.alert, !this.props.alert.published)
                 }}>

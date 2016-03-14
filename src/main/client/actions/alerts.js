@@ -48,3 +48,10 @@ export const deleteAlert = (alert) => {
     alert
   }
 }
+
+export const receivedRtdAlerts = (rtdAlerts) => {
+  return {
+    type: 'RECEIVED_RTD_ALERTS',
+    rtdAlerts
+  }
+}

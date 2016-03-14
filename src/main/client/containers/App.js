@@ -8,8 +8,8 @@ import AlertsViewer from '../components/AlertsViewer'
 import NoAccessScreen from '../components/NoAccessScreen'
 import ActiveAlertEditor from './ActiveAlertEditor'
 
-import { createAlert } from '../actions/alerts'
 import { addActiveEntity } from '../actions/activeAlert'
+import { createAlert, receivedRtdAlerts } from '../actions/alerts'
 import { userLoggedIn } from '../actions/user'
 
 import config from '../config'
@@ -37,11 +37,18 @@ class App extends React.Component {
       return this.dataManager.getProjectsAndFeeds(user)
     })
 
+    var alertsPromise = fetch(config.rtdApi).then((res) => {
+      return res.json()
+    })
+
     Promise.all([loginPromise, projectsPromise]).then((results) => {
       let user = results[0]
       let projects = results[1]
 
+      //let rtdAlerts = results[2]
+      //console.log('got api alerts', rtdAlerts)
       this.props.userLoggedIn(user, projects)
+      //this.props.receivedRtdAlerts(rtdAlerts)
     })
   }
 
@@ -90,7 +97,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onStopClick: (stop) => dispatch(createAlert(stop)),
     onRouteClick: (route) => dispatch(createAlert(route)),
     editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
-    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route))
+    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route)),
+    receivedRtdAlerts: (rtdAlerts) => dispatch(receivedRtdAlerts(rtdAlerts)),
   }
 }
 

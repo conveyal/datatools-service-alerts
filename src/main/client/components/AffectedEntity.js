@@ -101,8 +101,8 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Agency:</b></span>
-                  <AgencySelector 
-                    feeds={this.props.feeds} 
+                  <AgencySelector
+                    feeds={this.props.feeds}
                     entityUpdated={this.props.entityUpdated}
                     entity={this.props.entity}
                   />
@@ -112,21 +112,21 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Mode:</b></span>
-                  <ModeSelector 
+                  <ModeSelector
                     entityUpdated={this.props.entityUpdated}
                     value={this.props.entity.type}
                     entity={this.props.entity}
                   />
                   <div style={indent}>
                     <span><i>Refine by Agency:</i></span>
-                    <AgencySelector 
-                      feeds={this.props.feeds} 
+                    <AgencySelector
+                      feeds={this.props.feeds}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
                     />
                     <span><i>Refine by Stop:</i></span>
-                    <StopSelector 
-                      feeds={this.props.feeds} 
+                    <StopSelector
+                      feeds={this.props.feeds}
                       stop={this.props.entity.stop}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -138,8 +138,8 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Stop:</b></span>
-                  <StopSelector 
-                    feeds={this.props.feeds} 
+                  <StopSelector
+                    feeds={this.props.feeds}
                     stop={this.props.entity.stop}
                     clearable={false}
                     entityUpdated={this.props.entityUpdated}
@@ -147,8 +147,8 @@ export default class AffectedEntity extends React.Component {
                   />
                   <div style={indent}>
                     <span><i>Refine by Route:</i></span>
-                    <RouteSelector 
-                      feeds={this.props.feeds} 
+                    <RouteSelector
+                      feeds={this.props.feeds}
                       route={this.props.entity.route}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -160,8 +160,8 @@ export default class AffectedEntity extends React.Component {
               return (
                 <div>
                   <span><b>Route:</b></span>
-                  <RouteSelector 
-                    feeds={this.props.feeds} 
+                  <RouteSelector
+                    feeds={this.props.feeds}
                     route={this.props.entity.route}
                     clearable={false}
                     entityUpdated={this.props.entityUpdated}
@@ -169,8 +169,8 @@ export default class AffectedEntity extends React.Component {
                   />
                   <div style={indent}>
                     <span><i>Refine by Stop:</i></span>
-                    <StopSelector 
-                      feeds={this.props.feeds} 
+                    <StopSelector
+                      feeds={this.props.feeds}
                       stop={this.props.entity.stop}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -191,6 +191,15 @@ export default class AffectedEntity extends React.Component {
 class AgencySelector extends React.Component {
 
   render () {
+
+    var compare = function(a, b) {
+      if (a.name < b.name)
+        return -1;
+      if (a.name > b.name)
+        return 1;
+      return 0;
+    }
+
     return (
       <div>
         <Input
@@ -200,8 +209,8 @@ class AgencySelector extends React.Component {
           }}
           //value={this.props.entity.type}
         >
-          {this.props.feeds.map((feed) => {
-            return <option value={feed.id}>{feed.name}</option>
+          {this.props.feeds.sort(compare).map((feed) => {
+            return <option key={feed.id} value={feed.defaultGtfsId}>{feed.name}</option>
           })}
         </Input>
       </div>
@@ -243,7 +252,7 @@ class RouteSelector extends React.Component {
     var routes = []
     return (
       <div>
-        <GtfsSearch 
+        <GtfsSearch
           feeds={this.props.feeds}
           clearable={this.props.clearable}
           entities={['routes']}
@@ -278,7 +287,7 @@ class StopSelector extends React.Component {
     var stops = []
     return (
       <div>
-        <GtfsSearch 
+        <GtfsSearch
           feeds={this.props.feeds}
           entities={['stops']}
           clearable={this.props.clearable}
@@ -291,7 +300,7 @@ class StopSelector extends React.Component {
           }}
           value={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `(${feedMap[this.state.stop.feed_id]}) ${this.state.stop.stop_name}`} : ''}
         />
-        
+
       </div>
     )
   }
