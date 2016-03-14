@@ -47,6 +47,7 @@ export default class GtfsMap extends React.Component {
   render() {
     console.log(this.props.stops)
     console.log(this.state.stops)
+    this.state.patterns.push(this.props.patterns)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
     var feedMap = this.props.feeds.reduce((map, obj) => {
@@ -196,21 +197,22 @@ export default class GtfsMap extends React.Component {
           return json
         })
   }
+
   getRoutesForBox(maxLat, maxLng, minLat, minLng){
     const feedIds = this.props.feeds.map(feed => feed.id)
     // console.log(feedIds)
     return fetch(`/api/routes?max_lat=${maxLat}&max_lon=${maxLng}&min_lat=${minLat}&min_lon=${minLng}&feed=${feedIds.toString()}`)
-        .then((response) => {
-          return response.json()
-        })
-        .then((json) => {
-          console.log(json)
-          const routes = json.map(p => p.associatedRoutes[0])
-          console.log(routes)
-          this.setState(Object.assign({}, this.state, { routes: routes, patterns: json }))
-          // this.setState(Object.assign({}, this.state, {  }))
-          return json
-        })
+      .then((response) => {
+        return response.json()
+      })
+      .then((json) => {
+        console.log(json)
+        const routes = json.map(p => p.associatedRoutes[0])
+        console.log(routes)
+        this.setState(Object.assign({}, this.state, { routes: routes, patterns: json }))
+        // this.setState(Object.assign({}, this.state, {  }))
+        return json
+      })
   }
 }
 // class StopPopup extends React.Component {

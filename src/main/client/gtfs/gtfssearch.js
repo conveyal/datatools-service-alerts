@@ -189,7 +189,7 @@ export default class GtfsSearch extends React.Component {
       filterOptions={false}
       minimumInput={1}
       clearable={this.props.clearable}
-      placeholder={placeHolder}
+      placeholder={this.props.placeholder || placeHolder}
       loadOptions={getOptions}
       value={this.state.value}
       optionRenderer={this.renderOption}

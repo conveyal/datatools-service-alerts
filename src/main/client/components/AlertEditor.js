@@ -5,6 +5,7 @@ import DateTimeField from 'react-bootstrap-datetimepicker'
 
 import AffectedEntity from './AffectedEntity'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
+import GtfsSearch from '../gtfs/gtfssearch'
 
 
 var causes = [
@@ -137,17 +138,42 @@ export default class AlertEditor extends React.Component {
                   <Panel header={<b>Affected Service</b>}>
                     <Row>
                       <Col xs={12}>
+                        <Row style={{marginBottom: '15px'}}>
+                          <Col xs={5}>
+                            <Button style={{marginRight: '5px'}} onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0].id)}>
+                              Add Agency
+                            </Button>
+                            <Button onClick={(evt) => this.props.onAddEntityClick('MODE', '0')}>
+                              Add Mode
+                            </Button>
+                          </Col>
+                          <Col xs={7}>
+                            <GtfsSearch 
+                              feeds={this.props.editableFeeds}
+                              placeholder='Add stop/route'
+                              entities={['stops', 'routes']}
+                              clearable={true}
+                              onChange={(evt) => {
+                                console.log('we need to add this entity to the store', evt)
+                                if (typeof evt !== 'undefined' && evt !== null){
+                                  if (evt.stop)
+                                    this.props.onAddEntityClick('STOP', evt.stop)
+                                  else if (evt.route)
+                                    this.props.onAddEntityClick('ROUTE', evt.route)
+                                }
+                              }}
+                            />
+                          </Col>
+                        </Row>
                         {this.props.alert.affectedEntities.map((entity) => {
                           return <AffectedEntity
                             entity={entity}
+                            key={entity.id}
                             feeds={this.props.editableFeeds}
                             onDeleteEntityClick={this.props.onDeleteEntityClick}
                             entityUpdated={this.props.entityUpdated}
                           />
                         })}
-                        <Button
-                          onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0].id)}
-                          className='pull-right'>Add</Button>
                       </Col>
                     </Row>
                   </Panel>

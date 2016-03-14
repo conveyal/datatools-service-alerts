@@ -48,17 +48,32 @@ export default class GtfsMapSearch extends React.Component {
     const handleStopSelection = (input) => {
       console.log(input)
       if (typeof input !== 'undefined' && input.stop){
-        console.log("setting state...")
         this.setState(Object.assign({}, this.state, { stops: [input.stop], position: [input.stop.stop_lat, input.stop.stop_lon] }))
-        console.log(this.state.stops)
+      }
+      else if (typeof input !== 'undefined' && input.route) {
+        // this.setState(Object.assign({}, this.state, { routes: [input.route] }))
+        fetch(`/api/patterns?route=${input.route.route_id}&feed=${input.route.feed_id}`)
+        .then((response) => {
+          return response.json()
+        })
+        .then((json) => {
+          console.log(json)
+          // const routes = json.map(p => p.associatedRoutes[0])
+          // console.log(routes)
+          this.setState(Object.assign({}, this.state, { routes: input.route, patterns: json[0] }))
+          // this.setState(Object.assign({}, this.state, {  }))
+          // return json
+        })
       }
     }
-    var displayedStops = this.state.stops
+    let displayedStops = this.state.stops
+    let displayedPatterns = this.state.patterns
     console.log(displayedStops)
     return (
     <div>
       <GtfsSearch 
         feeds={this.props.feeds}
+        placeholder={this.props.placeholder}
         onChange={handleStopSelection}
         entities={['stops', 'routes']}
       />
@@ -67,6 +82,7 @@ export default class GtfsMapSearch extends React.Component {
         onStopClick={this.props.onStopClick}
         onRouteClick={this.props.onRouteClick}
         stops={displayedStops}
+        patterns={displayedPatterns}
         popupAction={this.props.popupAction}
       />
     </div>

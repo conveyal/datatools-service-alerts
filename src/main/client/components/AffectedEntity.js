@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 
-import { Panel, Row, Col, ButtonGroup, Button, Glyphicon, Input } from 'react-bootstrap'
+import { Panel, Row, Col, ButtonGroup, Button, Glyphicon, Input, DropdownButton, MenuItem } from 'react-bootstrap'
 
 import GtfsSearch from '../gtfs/gtfssearch'
 
@@ -52,46 +52,39 @@ export default class AffectedEntity extends React.Component {
   constructor (props) {
     super(props)
   }
-
+  getModeName (id) {
+    return modes.find((mode) => mode.gtfsType === +id ).name
+  }
+  getFeedName (id) {
+    return this.props.feeds.find((feed) => feed.id === id ).name
+  }
   render () {
-
-    /*var modesContent =  (
-      <Input
-        type="select"
-        onChange={(evt) => {
-          //this.props.entityModeChanged(this.props.entity, evt.target.value)
-        }}
-        //value={this.props.entity.type}
-      >
-        {modes.map((mode) => {
-          return <option value={mode.gtfsType}>{mode.name}</option>
-        })}
-      </Input>
-    )*/
+    const getEntitySummary = (entity) => {
+      const type = entity.type
+      const val = entity[type.toLowerCase()]
+      console.log('val', val)
+      switch (type) {
+        case 'AGENCY' :
+          return this.getFeedName(val)
+        case 'STOP' :
+          return `${val.stop_name} (${this.getFeedName(val.feed_id)})`
+        case 'ROUTE' :
+          const routeName = val.route_short_name || val.route_long_name
+          return `${routeName} (${this.getFeedName(val.feed_id)})`
+        case 'MODE' :
+          return this.getModeName(val)
+      }
+    }
 
     return (
-      <Panel header={
+      <Panel collapsible header={
         <Row>
+          <Col xs={10}>
+            {this.props.entity.type}: {getEntitySummary(this.props.entity)}
+          </Col>
           <Col xs={2}>
-            Affects:
-          </Col>
-          <Col xs={6}>
-            <Input
-              type="select"
-              onChange={(evt) => {
-                this.props.entityUpdated(this.props.entity, "TYPE", evt.target.value)
-              }}
-              value={this.props.entity.type}
-            >
-              <option value='AGENCY'>Agency</option>
-              <option value='MODE'>Mode</option>
-              <option value='STOP'>Stop</option>
-              <option value='ROUTE'>Route</option>
-            </Input>
-          </Col>
-          <Col xs={4}>
             <ButtonGroup className='pull-right'>
-              <Button onClick={() => this.props.onDeleteEntityClick(this.props.entity)}>
+              <Button bsSize="small" onClick={() => this.props.onDeleteEntityClick(this.props.entity)}>
                 <Glyphicon glyph="remove" />
               </Button>
             </ButtonGroup>
