@@ -37,7 +37,10 @@ export default class GtfsMapSearch extends React.Component {
 
     const handleStopSelection = (input) => {
       console.log(input)
-      if (typeof input !== 'undefined' && input.stop){
+      if (input === null) {
+        this.setState({stops: [], routes: []})
+      }
+      else if (typeof input !== 'undefined' && input.stop){
         this.setState(Object.assign({}, this.state, { stops: [input.stop], position: [input.stop.stop_lat, input.stop.stop_lon] }))
       }
       else if (typeof input !== 'undefined' && input.route) {
@@ -72,6 +75,7 @@ export default class GtfsMapSearch extends React.Component {
         onStopClick={this.props.onStopClick}
         onRouteClick={this.props.onRouteClick}
         stops={displayedStops}
+        searchFocus={true}
         patterns={displayedPatterns}
         popupAction={this.props.popupAction}
       />

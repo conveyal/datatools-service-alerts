@@ -22,6 +22,7 @@ export default class GtfsMap extends React.Component {
     this.state = {
       stops: [],
       routes: [],
+      searchFocus: this.props.searchFocus || false,
       patterns: [],
       message: '',
       position: position,
@@ -67,8 +68,9 @@ export default class GtfsMap extends React.Component {
     // msTransition: 'all' // 'ms' is the only lowercase vendor prefix
     }
     const layerAddHandler = (e) => {
-      if (this.props.stops.length === 1 && typeof e.layer !== 'undefined' && typeof e.layer._popup !== 'undefined'){
+      if (this.props.stops.length === 1 && typeof e.layer !== 'undefined' && typeof e.layer._popup !== 'undefined' && this.state.searchFocus){
         e.layer.openPopup()
+        this.setState({searchFocus: false})
       }
     }
 

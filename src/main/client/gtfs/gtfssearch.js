@@ -3,7 +3,7 @@ import $ from 'jquery'
 
 import fetch from 'isomorphic-fetch'
 
-import { Panel, Grid, Row, Col, Button, Glyphicon } from 'react-bootstrap'
+import { Panel, Grid, Row, Col, Button, Glyphicon, Label } from 'react-bootstrap'
 
 import { PureComponent, shallowEqual } from 'react-pure-render'
 
@@ -44,24 +44,17 @@ export default class GtfsSearch extends React.Component {
     }
   }
   renderOption (option) {
-    return <span style={{ color: 'black' }}>{option.stop ? <Glyphicon glyph="map-marker" /> : <Glyphicon glyph="option-horizontal" />} {option.label} {option.link}</span>
+    return <span style={{ color: 'black' }}>{option.stop ? <Glyphicon glyph="map-marker" /> : <Glyphicon glyph="option-horizontal" />} {option.label} <Label>{option.agency}</Label> {option.link}</span>
   }
   onChange (value) {
     this.setState({value})
     this.props.onChange && this.props.onChange(value && this.options[value.value])
   }
-  getFeedName (feedId) {
-    const feedMap = this.props.feeds.reduce((map, obj) => {
-      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
-      return map;
-    })
-  }
   render() {
     console.log('render search feeds', this.props.feeds);
-    const feedMap = this.props.feeds.reduce((map, obj) => {
-      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
-      return map;
-    }, {})
+    const getFeed = (id) => {
+      return this.props.feeds.find((feed) => feed.id === id )
+    }
     const getStops = (input) => {
       const feedIds = this.props.feeds.map(feed => feed.id)
       const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
@@ -70,7 +63,7 @@ export default class GtfsSearch extends React.Component {
           return response.json()
         })
         .then((json) => {
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name} (${feedMap[stop.feed_id]})`}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(stop.feed_id).name}))
           return { options: stopOptions }
         })
     }
@@ -82,7 +75,7 @@ export default class GtfsSearch extends React.Component {
           return response.json()
         })
         .then((json) => {
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name} (${feedMap[route.feed_id]})`}))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name}`, agency: getFeed(route.feed_id).name}))
           return { options: routeOptions }
         })
     }
