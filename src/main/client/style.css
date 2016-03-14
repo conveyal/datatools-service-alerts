@@ -1,5 +1,10 @@
 @import url('~react-select/dist/react-select.css');
 
-.Select-menu-outer {
-  z-index: 2000;
+/*.Select {
+  z-index: 2;
+}*/
+
+.leaflet-top,
+.leaflet-bottom {
+	z-index: 0;
 }
