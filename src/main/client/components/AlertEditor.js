@@ -5,6 +5,7 @@ import DateTimeField from 'react-bootstrap-datetimepicker'
 
 import AffectedEntity from './AffectedEntity'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
+import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 
 
 var causes = [
@@ -156,8 +157,9 @@ export default class AlertEditor extends React.Component {
             </Col>
 
             <Col xs={6}>
-              <GtfsMapSearch 
-                feeds={this.props.editableFeeds}
+              <GlobalGtfsFilter />
+              <GtfsMapSearch
+                feeds={this.props.activeFeeds}
                 onStopClick={this.props.onStopClick}
                 onRouteClick={this.props.onRouteClick}
                 popupAction='Add'

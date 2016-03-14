@@ -55,10 +55,11 @@ export default class GtfsSearch extends React.Component {
     })
   }
   render() {
+    console.log('render search feeds', this.props.feeds);
     const feedMap = this.props.feeds.reduce((map, obj) => {
       map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
       return map;
-    })
+    }, {})
 
     const getStops = (input, callback) => {
       const feedIds = this.props.feeds.map(feed => feed.id)
@@ -110,7 +111,7 @@ export default class GtfsSearch extends React.Component {
         })
       }
     const getOptions = (input) => {
-      
+
       const entities = typeof this.props.entities !== 'undefined' ? this.props.entities : ['routes', 'stops']
 
       // TODO: get this working... instead of what's below
@@ -166,7 +167,7 @@ export default class GtfsSearch extends React.Component {
         });
       }
 
-      
+
     }
     const handleChange = (input) => {
       this.onChange(input)
@@ -176,9 +177,6 @@ export default class GtfsSearch extends React.Component {
       {value: 'one', label: 'One'},
       {value: 'two', label: 'Two'}
     ]
-    const selectStyle = {
-      'z-index': '2000'
-    }
     const placeHolder = 'Begin typing to search for ' + this.props.entities.join(' or ') + '...'
     return (
     <Select.Async
@@ -194,4 +192,3 @@ export default class GtfsSearch extends React.Component {
     )
   }
 }
-
