@@ -1,6 +1,7 @@
 package com.conveyal.gtfs.datatools;
 
 import com.conveyal.gtfs.api.*;
+import com.conveyal.gtfs.datatools.controllers.ConfigController;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.File;
@@ -53,6 +54,8 @@ public class ServiceAlerts {
         staticFileLocation("/public");
 
         // set gtfs-api calls to use "/api/" prefix
+
+        ConfigController.register("/api/");
         Routes.routes("api");
 
     }

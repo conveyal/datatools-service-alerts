@@ -1,18 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Router, Route } from 'react-router'
 
-import DatatoolsNavbar from 'datatools-navbar'
-import { Auth0Manager, DataManager } from 'datatools-common'
-
-import AlertsViewer from '../components/AlertsViewer'
 import NoAccessScreen from '../components/NoAccessScreen'
-import ActiveAlertEditor from './ActiveAlertEditor'
+import MainAlertsViewer from '../containers/MainAlertsViewer'
+import ActiveAlertEditor from '../containers/ActiveAlertEditor'
 
-import { addActiveEntity } from '../actions/activeAlert'
-import { createAlert, receivedRtdAlerts } from '../actions/alerts'
-import { userLoggedIn } from '../actions/user'
-
-import config from '../config'
+import { checkExistingLogin, userLoggedIn } from '../actions/user'
+import { fetchConfig } from '../actions/config'
 
 import '../style.css'
 
@@ -21,43 +16,18 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
-    this.auth0 = new Auth0Manager(config)
-    this.dataManager = new DataManager({
-      managerUrl : config.managerUrl
-    })
-
-    var login = this.auth0.checkExistingLogin()
-    if (login) this.handleLogin(login)
-  }
-
-
-  handleLogin (loginPromise) {
-    var projectsPromise = loginPromise.then((user) => {
-      // retrieve all projects (feed collections) and populate feeds for the default project
-      return this.dataManager.getProjectsAndFeeds(user)
-    })
-
-    var alertsPromise = fetch(config.rtdApi).then((res) => {
-      return res.json()
-    })
-
-    Promise.all([loginPromise, projectsPromise, alertsPromise]).then((results) => {
-      let user = results[0]
-      let projects = results[1]
-
-      let rtdAlerts = results[2]
-      this.props.userLoggedIn(user, projects)
-      this.props.receivedRtdAlerts(rtdAlerts, projects)
+    this.props.fetchConfig().then(() => {
+      return this.props.checkExistingLogin()
     })
   }
 
   render () {
-
+    console.log('App render')
     let canAccess = false, noAccessReason
-    if(this.props.user === null) {
-      noAccessReason = 'NOT_LOGGED_ID'
+    if(this.props.user.profile === null) {
+      noAccessReason = 'NOT_LOGGED_IN'
     }
-    else if(!this.props.user.permissions.hasProjectPermission(config.activeProjectId, 'edit-alert')) {
+    else if(!this.props.user.permissions.hasProjectPermission(this.props.config.activeProjectId, 'edit-alert')) {
       noAccessReason = 'INSUFFICIENT_PERMISSIONS'
     }
     else {
@@ -66,28 +36,13 @@ class App extends React.Component {
 
     return (
       <div>
-        <DatatoolsNavbar
-          title={config.title}
-          managerUrl={config.managerUrl}
-          editorUrl={config.editorUrl}
-          userAdminUrl={config.userAdminUrl}
-          username={ this.props.user ? this.props.user.profile.email : null }
-          loginHandler={() => { console.log('login'); this.handleLogin(this.auth0.loginViaLock()) }}
-          logoutHandler={() => { this.auth0.logout() }}
-          resetPasswordHandler={() => { this.auth0.resetPassword() }}
-        />
         {!canAccess
           ? <NoAccessScreen reason={noAccessReason} />
-          : this.props.activeAlert !== null
-            ? <ActiveAlertEditor
-              onStopClick={this.props.editorStopClick}
-              onRouteClick={this.props.editorRouteClick}
-            />
-            : <AlertsViewer
-              activeFeeds={this.props.activeFeeds}
-              onStopClick={this.props.onStopClick}
-              onRouteClick={this.props.onRouteClick}
-            />
+          : <Router history={this.props.history}>
+            <Route path='/' component={MainAlertsViewer} />
+            <Route path='/foo' component={NoAccessScreen} />
+            <Route path='/alert/:alertId' component={ActiveAlertEditor} />
+          </Router>
         }
       </div>
     )
@@ -97,19 +52,14 @@ class App extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     user: state.user,
-    activeAlert: state.activeAlert,
-    activeFeeds: state.gtfsFilter.activeFeeds
+    config: state.config
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    userLoggedIn: (user, projects) => dispatch(userLoggedIn(user, projects)),
-    onStopClick: (stop) => dispatch(createAlert(stop)),
-    onRouteClick: (route) => dispatch(createAlert(route)),
-    editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
-    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route)),
-    receivedRtdAlerts: (rtdAlerts, projects) => dispatch(receivedRtdAlerts(rtdAlerts, projects)),
+    fetchConfig: () => dispatch(fetchConfig()),
+    checkExistingLogin: () => dispatch(checkExistingLogin())
   }
 }
 

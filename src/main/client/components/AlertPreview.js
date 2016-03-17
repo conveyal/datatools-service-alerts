@@ -2,6 +2,7 @@ import React from 'react'
 import moment from 'moment'
 
 import { Panel, Grid, Row, Col, ButtonGroup, Button, Glyphicon, Label } from 'react-bootstrap'
+import { Link } from 'react-router'
 
 export default class AlertPreview extends React.Component {
 
@@ -20,9 +21,6 @@ export default class AlertPreview extends React.Component {
             <ButtonGroup className='pull-right'>
               <Button onClick={() => this.props.onEditClick(this.props.alert)}>
                 <Glyphicon glyph="pencil" />
-              </Button>
-              <Button onClick={() => this.props.onZoomClick(this.props.alert)}>
-                <Glyphicon glyph="search" />
               </Button>
               <Button onClick={() => this.props.onDeleteClick(this.props.alert)}>
                 <Glyphicon glyph="remove" />

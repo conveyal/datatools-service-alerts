@@ -1,3 +1,12 @@
+export activeAlert from './activeAlert'
+export alerts from './alerts'
+export gtfsFilter from './gtfsFilter'
+export config from './config'
+export user from './user'
+export projects from './projects'
+export visibilityFilter from './visibilityFilter'
+
+/*
 import { combineReducers } from 'redux'
 
 import activeAlert from './activeAlert'
@@ -17,3 +26,4 @@ const alertsApp = combineReducers({
 })
 
 export default alertsApp
+*/

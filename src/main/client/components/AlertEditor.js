@@ -3,6 +3,7 @@ import React from 'react'
 import { Grid, Row, Col, ButtonGroup, Button, Input, Panel } from 'react-bootstrap'
 import DateTimeField from 'react-bootstrap-datetimepicker'
 
+import ManagerNavbar from '../containers/ManagerNavbar'
 import AffectedEntity from './AffectedEntity'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 import GtfsSearch from '../gtfs/gtfssearch'
@@ -39,9 +40,11 @@ var effects = [
 export default class AlertEditor extends React.Component {
 
   render () {
+    console.log('AlertEditor')
     console.log(this.props.alert)
     return (
       <div>
+        <ManagerNavbar />
         <Grid>
           <Row>
             <Col xs={4}>
@@ -72,7 +75,7 @@ export default class AlertEditor extends React.Component {
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
                 <Button onClick={(evt) => {
-                  if(this.props.alert.affectedEntities == 0) {
+                  /*if(this.props.alert.affectedEntities == 0) {
                     alert("You must add at least one Service Entity")
                     return
                   }
@@ -113,14 +116,17 @@ export default class AlertEditor extends React.Component {
                     console.log('status='+res.status)
                     console.log(res.json());
                     window.location.reload()
-                  })
+                  })*/
+                  console.log('onsaveclick');
+                  this.props.onSaveClick(this.props.alert)
 
                 }}>Save</Button>
+
                 <Button onClick={(evt) => {
                   this.props.onPublishClick(this.props.alert, !this.props.alert.published)
                 }}>
                   {this.props.alert.published ? 'Unpublish' : 'Publish'}</Button>
-                <Button onClick={(evt) => this.props.onDeleteClick(this.props.alert)}>Delete</Button>
+
               </ButtonGroup>
             </Col>
           </Row>

@@ -1,3 +1,6 @@
+import { push } from 'react-router-redux'
+import { browserHistory } from 'react-router'
+
 // alerts management action
 
 let nextAlertId = 0
@@ -28,19 +31,19 @@ export const createAlert = (entity) => {
   }
 }
 
-export const saveAlert = (alert) => {
+/*export const saveAlert = (alert) => {
   return {
     type: 'SAVE_ALERT',
     alert
   }
-}
+}*/
 
-export const editAlert = (alert) => {
+/*export const editAlert = (alert) => {
   return {
     type: 'EDIT_ALERT',
     alert
   }
-}
+}*/
 
 export const deleteAlert = (alert) => {
   return {
@@ -49,10 +52,89 @@ export const deleteAlert = (alert) => {
   }
 }
 
-export const receivedRtdAlerts = (rtdAlerts, projects) => {
+export const requestRtdAlerts = () => {
+  return {
+    type: 'REQUEST_RTD_ALERTS',
+  }
+}
+
+
+export const receivedRtdAlerts = (rtdAlerts, activeProject) => {
   return {
     type: 'RECEIVED_RTD_ALERTS',
     rtdAlerts,
-    projects
+    activeProject
+  }
+}
+
+export function fetchRtdAlerts() {
+  return function (dispatch, getState) {
+    dispatch(requestRtdAlerts())
+    fetch(getState().config.rtdApi).then((res) => {
+      return res.json()
+    }).then((alerts) => {
+      console.log('got alerts')
+      return dispatch(receivedRtdAlerts(alerts, getState().projects.active))
+    })
+  }
+}
+
+export const updateActiveAlert = (alert) => {
+  return {
+    type: 'UPDATE_ACTIVE_ALERT',
+    alert
+  }
+}
+
+export function editAlert(alert) {
+  return function (dispatch, getState) {
+    dispatch(updateActiveAlert(alert))
+    browserHistory.push('/alert/'+alert.id)
+  }
+}
+
+export function saveAlert(alert) {
+  return function (dispatch, getState) {
+    console.log('saving...')
+    var json = {
+      Id: null,
+      HeaderText: alert.title || 'New Alert',
+      DescriptionText: alert.description || '',
+      Url: alert.url || '',
+      Cause: alert.cause || 'UNKNOWN_CAUSE',
+      Effect: alert.effect || 'UNKNOWN_EFFECT',
+      Published: 'No',
+      StartDateTime: alert.start/1000 || 0,
+      EndDateTime: alert.end/1000 || 0,
+      ServiceAlertEntities: alert.affectedEntities.map((entity) => {
+        console.log('ent', entity)
+        return {
+          Id: entity.id,
+          AlertId: alert.id,
+          AgencyId: entity.agency ? entity.agency.defaultGtfsId : null,
+          RouteId: entity.route ? entity.route.route_id : null,
+          RouteType: entity.mode ? entity.mode.gtfsType : null,
+          StopId: entity.stop ? entity.stop.stop_id : null,
+          TripId: null,
+          ServiceAlertTrips: []
+        }
+      })
+    }
+
+    console.log('saving', alert.id, json)
+    fetch(getState().config.rtdApi + (alert.id < 0 ? '' : '/' + alert.id), {
+      method: alert.id < 0 ? 'post' : 'put',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(json)
+    }).then((res) => {
+      console.log('status='+res.status)
+      console.log(res.json());
+      browserHistory.push('/')
+      console.log('pushed')
+      dispatch(fetchRtdAlerts())
+    })
   }
 }

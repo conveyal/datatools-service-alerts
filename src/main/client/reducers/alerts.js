@@ -1,11 +1,12 @@
-import config from '../config'
-
 import modes from '../modes'
 
-const alerts = (state = [], action) => {
+const alerts = (state = {
+  isFetching: false,
+  all: []
+}, action) => {
   let foundIndex
   switch (action.type) {
-    case 'SAVE_ALERT':
+    /*case 'SAVE_ALERT':
       // if alert exists, overwrite
       foundIndex = state.findIndex(a => a.id === action.alert.id)
       if(foundIndex !== -1) {
@@ -20,22 +21,28 @@ const alerts = (state = [], action) => {
       return [
         ...state,
         action.alert
-      ]
-    case 'DELETE_ALERT':
+      ]*/
+      
+    /*case 'DELETE_ALERT':
       foundIndex = state.findIndex(a => a.id === action.alert.id)
       if(foundIndex !== -1) {
         return [
           ...state.slice(0, foundIndex),
           ...state.slice(foundIndex + 1)
         ]
-      }
+      }*/
 
+    case 'REQUEST_RTD_ALERTS':
+      return {
+        isFetching: true,
+        all: []
+      }
     case 'RECEIVED_RTD_ALERTS':
       console.log('RECEIVED_RTD_ALERTS', action.rtdAlerts)
-      return action.rtdAlerts.map((rtdAlert) => {
+      const allAlerts = action.rtdAlerts.map((rtdAlert) => {
 
-        let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
-        let project = action.projects[activeIndex]
+        //let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
+        let project = action.activeProject // action.projects[activeIndex]
 
         let alert = {
           id: rtdAlert.Id,
@@ -69,6 +76,11 @@ const alerts = (state = [], action) => {
         }
         return alert
       })
+
+      return {
+        isFetching: false,
+        all: allAlerts
+      }
 
     default:
       return state

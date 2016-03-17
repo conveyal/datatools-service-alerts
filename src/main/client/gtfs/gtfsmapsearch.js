@@ -7,8 +7,6 @@ import { Panel, Grid, Row, Col, Button } from 'react-bootstrap'
 
 import { PureComponent, shallowEqual } from 'react-pure-render'
 
-import config from '../config'
-
 import GtfsMap from './gtfsmap'
 import GtfsSearch from './gtfssearch'
 
@@ -18,7 +16,6 @@ export default class GtfsMapSearch extends React.Component {
     super(props)
     const position = [37.779871, -122.426966]
     this.state = {
-      feedIds: config.feedIds,
       stops: [],
       message: '',
       position: position,

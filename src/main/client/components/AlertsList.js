@@ -52,15 +52,19 @@ export default class AlertsList extends React.Component {
           <div className="form-group">&nbsp;</div>
         </Row>
         <Row>
-        {sortedAlerts.map((alert) => {
-          return <AlertPreview
-            alert={alert}
-            key={alert.id}
-            onEditClick={this.props.onEditClick}
-            onZoomClick={this.props.onZoomClick}
-            onDeleteClick={this.props.onDeleteClick}
-          />
-        })}
+
+        {this.props.isFetching
+          ? <p>Loading alerts...</p>
+          : sortedAlerts.map((alert) => {
+            return <AlertPreview
+              alert={alert}
+              key={alert.id}
+              onEditClick={this.props.onEditClick}
+              onZoomClick={this.props.onZoomClick}
+              onDeleteClick={this.props.onDeleteClick}
+            />
+          })
+        }
         </Row>
       </div>
     )

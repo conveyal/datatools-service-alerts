@@ -1,18 +1,16 @@
 {
-  "name": "datatools-user-manager",
+  "name": "datatools-service-alerts",
   "version": "0.1.0",
-  "description": "Webapp for managing users/permissions for the Conveyal transit data tools projects",
+  "description": "Webapp for managing GTFS-RT service alerts",
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/conveyal/datatools-user-manager.git"
+    "url": "https://github.com/conveyal/datatools-service-alerts.git"
   },
   "author": "Conveyal LLC",
   "license": "MIT",
   "scripts": {
-    "test": "",
-    "start": "./node_modules/.bin/babel-node server",
-    "build": "rimraf dist && set NODE_ENV=production && webpack --config ./webpack.production.config.js --progress --profile --colors"
+    "test": ""
   },
   "dependencies": {
     "body-parser": "^1.14.2",
@@ -32,10 +30,14 @@
     "request": "^2.67.0",
     "redux": "^3.3.1",
     "react-redux": "^4.4.0",
+    "redux-thunk": "^2.0.1",
     "react-bootstrap-datetimepicker": "^0.0.22",
     "moment": "^2.11.2",
     "react-addons-update": "^0.14.7",
-    "datatools-common": "^0.1.1"
+    "datatools-common": "^0.1.1",
+    "react-router": "^2.0.0",
+    "react-router-redux": "^4.0.0",
+    "history": "^2.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
