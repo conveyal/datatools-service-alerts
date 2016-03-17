@@ -47,7 +47,7 @@ class App extends React.Component {
 
       let rtdAlerts = results[2]
       this.props.userLoggedIn(user, projects)
-      this.props.receivedRtdAlerts(rtdAlerts)
+      this.props.receivedRtdAlerts(rtdAlerts, projects)
     })
   }
 
@@ -109,7 +109,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     onRouteClick: (route) => dispatch(createAlert(route)),
     editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
     editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route)),
-    receivedRtdAlerts: (rtdAlerts) => dispatch(receivedRtdAlerts(rtdAlerts)),
+    receivedRtdAlerts: (rtdAlerts, projects) => dispatch(receivedRtdAlerts(rtdAlerts, projects)),
   }
 }
 

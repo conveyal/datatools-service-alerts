@@ -10,6 +10,13 @@ export default class AlertsList extends React.Component {
   }
 
   render () {
+
+    let sortedAlerts = this.props.alerts.sort((a,b) => {
+      if(a.id < b.id) return -1
+      if(a.id > b.id) return 1
+      return 0
+    })
+
     return (
       <div>
         <Row>
@@ -45,7 +52,7 @@ export default class AlertsList extends React.Component {
           <div className="form-group">&nbsp;</div>
         </Row>
         <Row>
-        {this.props.alerts.map((alert) => {
+        {sortedAlerts.map((alert) => {
           return <AlertPreview
             alert={alert}
             key={alert.id}

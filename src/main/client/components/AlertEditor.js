@@ -72,31 +72,38 @@ export default class AlertEditor extends React.Component {
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
                 <Button onClick={(evt) => {
-                  var json = {
-                    Id: this.props.alert.id,
-                    HeaderText: this.props.alert.title,
-                    DescriptionText: this.props.alert.description,
-                    Url: this.props.alert.url,
-                    Cause: this.props.alert.cause,
-                    Effect: this.props.alert.effect,
-                    Published: 'No',
-                    StartDateTime: this.props.alert.start,
-                    EndDateTime: this.props.alert.end,
-                    ServiceAlertEntities: []
+                  if(this.props.alert.affectedEntities == 0) {
+                    alert("You must add at least one Service Entity")
+                    return
                   }
-                  json.ServiceAlertEntities.push({
-                    Id: 6,
-                    AlertId: 5,
-                    AgencyId: "MT",
-                    RouteId: null,
-                    RouteType: null,
-                    StopId: "1",
-                    TripId: null,
-                    ServiceAlertTrips: []
-                  })
-                  console.log('saving', this.props.alert.id, json, JSON.stringify(json))
-                  fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+this.props.alert.id, {
-                    method: 'put',
+                  var json = {
+                    Id: null,
+                    HeaderText: this.props.alert.title || 'New Alert',
+                    DescriptionText: this.props.alert.description || '',
+                    Url: this.props.alert.url || '',
+                    Cause: this.props.alert.cause || 'UNKNOWN_CAUSE',
+                    Effect: this.props.alert.effect || 'UNKNOWN_EFFECT',
+                    Published: 'No',
+                    StartDateTime: this.props.alert.start/1000 || 0,
+                    EndDateTime: this.props.alert.end/1000 || 0,
+                    ServiceAlertEntities: this.props.alert.affectedEntities.map((entity) => {
+                      console.log('ent', entity)
+                      return {
+                        Id: entity.id,
+                        AlertId: this.props.alert.id,
+                        AgencyId: entity.agency ? entity.agency.defaultGtfsId : null,
+                        RouteId: entity.route ? entity.route.route_id : null,
+                        RouteType: entity.mode ? entity.mode.gtfsType : null,
+                        StopId: entity.stop ? entity.stop.stop_id : null,
+                        TripId: null,
+                        ServiceAlertTrips: []
+                      }
+                    })
+                  }
+
+                  console.log('saving', this.props.alert.id, json)
+                  fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+(this.props.alert.id < 0 ? '' : this.props.alert.id), {
+                    method: this.props.alert.id < 0 ? 'post' : 'put',
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json'
@@ -105,7 +112,7 @@ export default class AlertEditor extends React.Component {
                   }).then((res) => {
                     console.log('status='+res.status)
                     console.log(res.json());
-                    this.props.onSaveClick(this.props.alert)
+                    window.location.reload()
                   })
 
                 }}>Save</Button>

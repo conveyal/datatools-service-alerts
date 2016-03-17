@@ -1,3 +1,7 @@
+import config from '../config'
+
+import modes from '../modes'
+
 const alerts = (state = [], action) => {
   let foundIndex
   switch (action.type) {
@@ -29,7 +33,11 @@ const alerts = (state = [], action) => {
     case 'RECEIVED_RTD_ALERTS':
       console.log('RECEIVED_RTD_ALERTS', action.rtdAlerts)
       return action.rtdAlerts.map((rtdAlert) => {
-        return {
+
+        let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
+        let project = action.projects[activeIndex]
+
+        let alert = {
           id: rtdAlert.Id,
           title: rtdAlert.HeaderText,
           description: rtdAlert.DescriptionText,
@@ -39,8 +47,27 @@ const alerts = (state = [], action) => {
           start: rtdAlert.StartDateTime*1000,
           end: rtdAlert.EndDateTime*1000,
           published: rtdAlert.Published === "Yes",
-          affectedEntities: []
+          affectedEntities: rtdAlert.ServiceAlertEntities.map((ent) => {
+            let entity = {
+              id: ent.Id,
+            }
+
+            if(ent.AgencyId) {
+              let feed = project.feeds.find(f => f.defaultGtfsId === ent.AgencyId)
+              entity.agency = feed
+              entity.type = 'AGENCY'
+            }
+
+            if(ent.RouteType) {
+              let mode = modes.find(m => m.gtfsType === ent.RouteType)
+              entity.mode = mode
+              entity.type = 'MODE'
+            }
+
+            return entity
+          })
         }
+        return alert
       })
 
     default:

@@ -4,7 +4,7 @@ let nextAlertId = 0
 let nextStopEntityId = 100
 
 export const createAlert = (entity) => {
-  nextAlertId++
+  nextAlertId--
   let entities = []
   if (entity) {
     nextStopEntityId++
@@ -21,7 +21,7 @@ export const createAlert = (entity) => {
     type: 'CREATE_ALERT',
     alert: {
       id: nextAlertId,
-      title: 'New Alert #' + nextAlertId,
+      title: 'New Alert',
       affectedEntities: entities,
       published: false
     }
@@ -49,9 +49,10 @@ export const deleteAlert = (alert) => {
   }
 }
 
-export const receivedRtdAlerts = (rtdAlerts) => {
+export const receivedRtdAlerts = (rtdAlerts, projects) => {
   return {
     type: 'RECEIVED_RTD_ALERTS',
-    rtdAlerts
+    rtdAlerts,
+    projects
   }
 }
