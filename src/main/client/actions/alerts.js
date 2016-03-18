@@ -1,12 +1,45 @@
 import { push } from 'react-router-redux'
 import { browserHistory } from 'react-router'
 
+import moment from 'moment'
+
 // alerts management action
 
 let nextAlertId = 0
 let nextStopEntityId = 100
 
-export const createAlert = (entity) => {
+export function createAlert (entity) {
+  return function (dispatch, getState) {
+    nextAlertId--
+    let entities = []
+
+    if (entity) {
+      nextStopEntityId++
+      let type = typeof entity.stop_id !== 'undefined' ? 'STOP' : 'ROUTE'
+      let newEntity = {
+        id: nextStopEntityId,
+        type: type
+      }
+      const typeKey = type.toLowerCase()
+      newEntity[typeKey] = entity
+      entities.push(newEntity)
+    }
+
+    const alert = {
+      id: nextAlertId,
+      title: 'New Alert',
+      affectedEntities: entities,
+      published: false,
+      start: moment().unix()*1000,
+      end: moment().add(30, 'day').unix()*1000
+    }
+
+    dispatch(updateActiveAlert(alert))
+    browserHistory.push('/newalert')
+  }
+}
+
+/*export const createAlert = (entity) => {
   nextAlertId--
   let entities = []
   if (entity) {
@@ -29,7 +62,7 @@ export const createAlert = (entity) => {
       published: false
     }
   }
-}
+}*/
 
 /*export const saveAlert = (alert) => {
   return {
@@ -73,7 +106,6 @@ export function fetchRtdAlerts() {
     fetch(getState().config.rtdApi).then((res) => {
       return res.json()
     }).then((alerts) => {
-      console.log('got alerts')
       return dispatch(receivedRtdAlerts(alerts, getState().projects.active))
     })
   }
@@ -122,8 +154,11 @@ export function saveAlert(alert) {
     }
 
     console.log('saving', alert.id, json)
-    fetch(getState().config.rtdApi + (alert.id < 0 ? '' : '/' + alert.id), {
-      method: alert.id < 0 ? 'post' : 'put',
+    const url = getState().config.rtdApi + (alert.id < 0 ? '' : '/' + alert.id)
+    const method = alert.id < 0 ? 'post' : 'put'
+    console.log('url/method', url, method)
+    fetch(url, {
+      method,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -131,9 +166,7 @@ export function saveAlert(alert) {
       body: JSON.stringify(json)
     }).then((res) => {
       console.log('status='+res.status)
-      console.log(res.json());
       browserHistory.push('/')
-      console.log('pushed')
       dispatch(fetchRtdAlerts())
     })
   }

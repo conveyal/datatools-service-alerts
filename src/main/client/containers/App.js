@@ -22,7 +22,6 @@ class App extends React.Component {
   }
 
   render () {
-    console.log('App render')
     let canAccess = false, noAccessReason
     if(this.props.user.profile === null) {
       noAccessReason = 'NOT_LOGGED_IN'
@@ -40,7 +39,7 @@ class App extends React.Component {
           ? <NoAccessScreen reason={noAccessReason} />
           : <Router history={this.props.history}>
             <Route path='/' component={MainAlertsViewer} />
-            <Route path='/foo' component={NoAccessScreen} />
+            <Route path='/newalert' component={ActiveAlertEditor} />
             <Route path='/alert/:alertId' component={ActiveAlertEditor} />
           </Router>
         }

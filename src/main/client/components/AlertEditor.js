@@ -9,6 +9,7 @@ import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 import GtfsSearch from '../gtfs/gtfssearch'
 import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 
+import moment from 'moment'
 
 var causes = [
   'UNKNOWN_CAUSE',
@@ -75,51 +76,21 @@ export default class AlertEditor extends React.Component {
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
                 <Button onClick={(evt) => {
-                  /*if(this.props.alert.affectedEntities == 0) {
-                    alert("You must add at least one Service Entity")
+                  console.log('times', this.props.alert.end, this.props.alert.start);
+                  if(this.props.alert.end < this.props.alert.start) {
+                    alert('Alert end date cannot be before start date')
                     return
                   }
-                  var json = {
-                    Id: null,
-                    HeaderText: this.props.alert.title || 'New Alert',
-                    DescriptionText: this.props.alert.description || '',
-                    Url: this.props.alert.url || '',
-                    Cause: this.props.alert.cause || 'UNKNOWN_CAUSE',
-                    Effect: this.props.alert.effect || 'UNKNOWN_EFFECT',
-                    Published: 'No',
-                    StartDateTime: this.props.alert.start/1000 || 0,
-                    EndDateTime: this.props.alert.end/1000 || 0,
-                    ServiceAlertEntities: this.props.alert.affectedEntities.map((entity) => {
-                      console.log('ent', entity)
-                      return {
-                        Id: entity.id,
-                        AlertId: this.props.alert.id,
-                        AgencyId: entity.agency ? entity.agency.defaultGtfsId : null,
-                        RouteId: entity.route ? entity.route.route_id : null,
-                        RouteType: entity.mode ? entity.mode.gtfsType : null,
-                        StopId: entity.stop ? entity.stop.stop_id : null,
-                        TripId: null,
-                        ServiceAlertTrips: []
-                      }
-                    })
+                  if(moment(this.props.alert.end).isBefore(moment())) {
+                    alert('Alert end date cannot be before the current date')
+                    return
+                  }
+                  if(this.props.alert.affectedEntities.length === 0) {
+                    alert('You must specify at least one affected entity')
+                    return
                   }
 
-                  console.log('saving', this.props.alert.id, json)
-                  fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+(this.props.alert.id < 0 ? '' : this.props.alert.id), {
-                    method: this.props.alert.id < 0 ? 'post' : 'put',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(json)
-                  }).then((res) => {
-                    console.log('status='+res.status)
-                    console.log(res.json());
-                    window.location.reload()
-                  })*/
-                  console.log('onsaveclick');
                   this.props.onSaveClick(this.props.alert)
-
                 }}>Save</Button>
 
                 <Button onClick={(evt) => {

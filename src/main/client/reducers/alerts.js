@@ -22,7 +22,7 @@ const alerts = (state = {
         ...state,
         action.alert
       ]*/
-      
+
     /*case 'DELETE_ALERT':
       foundIndex = state.findIndex(a => a.id === action.alert.id)
       if(foundIndex !== -1) {
@@ -38,7 +38,6 @@ const alerts = (state = {
         all: []
       }
     case 'RECEIVED_RTD_ALERTS':
-      console.log('RECEIVED_RTD_ALERTS', action.rtdAlerts)
       const allAlerts = action.rtdAlerts.map((rtdAlert) => {
 
         //let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
