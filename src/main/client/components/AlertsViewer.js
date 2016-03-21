@@ -2,22 +2,25 @@ import React from 'react'
 
 import { Grid, Row, Col, Button } from 'react-bootstrap'
 
+import ManagerNavbar from '../containers/ManagerNavbar'
 import CreateAlert from '../containers/CreateAlert'
 import VisibleAlertsList from '../containers/VisibleAlertsList'
-
 import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
+
+import { Link } from 'react-router'
 
 export default class AlertsViewer extends React.Component {
 
   constructor (props) {
     super(props)
-    console.log("AV activeFeeds", this.props.activeFeeds);
+    //console.log("AV activeFeeds", this.props.activeFeeds);
   }
 
   render () {
     return (
       <div>
+        <ManagerNavbar />
         <Grid>
           <Row>
             <Col xs={12}>

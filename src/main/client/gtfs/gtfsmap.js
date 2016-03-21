@@ -9,8 +9,6 @@ import { PureComponent, shallowEqual } from 'react-pure-render'
 
 import { Map, Marker, Popup, TileLayer, Polyline, MapControl, GeoJson } from 'react-leaflet'
 
-import config from '../config'
-
 import Select from 'react-select'
 
 export default class GtfsMap extends React.Component {

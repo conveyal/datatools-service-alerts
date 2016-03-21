@@ -3,11 +3,13 @@ import React from 'react'
 import { Grid, Row, Col, ButtonGroup, Button, Input, Panel } from 'react-bootstrap'
 import DateTimeField from 'react-bootstrap-datetimepicker'
 
+import ManagerNavbar from '../containers/ManagerNavbar'
 import AffectedEntity from './AffectedEntity'
 import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 import GtfsSearch from '../gtfs/gtfssearch'
 import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 
+import moment from 'moment'
 
 var causes = [
   'UNKNOWN_CAUSE',
@@ -39,9 +41,11 @@ var effects = [
 export default class AlertEditor extends React.Component {
 
   render () {
+    console.log('AlertEditor')
     console.log(this.props.alert)
     return (
       <div>
+        <ManagerNavbar />
         <Grid>
           <Row>
             <Col xs={4}>
@@ -72,48 +76,28 @@ export default class AlertEditor extends React.Component {
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
                 <Button onClick={(evt) => {
-                  var json = {
-                    Id: this.props.alert.id,
-                    HeaderText: this.props.alert.title,
-                    DescriptionText: this.props.alert.description,
-                    Url: this.props.alert.url,
-                    Cause: this.props.alert.cause,
-                    Effect: this.props.alert.effect,
-                    Published: 'No',
-                    StartDateTime: this.props.alert.start,
-                    EndDateTime: this.props.alert.end,
-                    ServiceAlertEntities: []
+                  console.log('times', this.props.alert.end, this.props.alert.start);
+                  if(this.props.alert.end < this.props.alert.start) {
+                    alert('Alert end date cannot be before start date')
+                    return
                   }
-                  json.ServiceAlertEntities.push({
-                    Id: 6,
-                    AlertId: 5,
-                    AgencyId: "MT",
-                    RouteId: null,
-                    RouteType: null,
-                    StopId: "1",
-                    TripId: null,
-                    ServiceAlertTrips: []
-                  })
-                  console.log('saving', this.props.alert.id, json, JSON.stringify(json))
-                  fetch('http://mtcqa.civicresource.net/api/ServiceAlert/'+this.props.alert.id, {
-                    method: 'put',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(json)
-                  }).then((res) => {
-                    console.log('status='+res.status)
-                    console.log(res.json());
-                    this.props.onSaveClick(this.props.alert)
-                  })
+                  if(moment(this.props.alert.end).isBefore(moment())) {
+                    alert('Alert end date cannot be before the current date')
+                    return
+                  }
+                  if(this.props.alert.affectedEntities.length === 0) {
+                    alert('You must specify at least one affected entity')
+                    return
+                  }
 
+                  this.props.onSaveClick(this.props.alert)
                 }}>Save</Button>
+
                 <Button onClick={(evt) => {
                   this.props.onPublishClick(this.props.alert, !this.props.alert.published)
                 }}>
                   {this.props.alert.published ? 'Unpublish' : 'Publish'}</Button>
-                <Button onClick={(evt) => this.props.onDeleteClick(this.props.alert)}>Delete</Button>
+
               </ButtonGroup>
             </Col>
           </Row>

@@ -28,8 +28,10 @@ const getVisibleAlerts = (alerts, visibilityFilter) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
+  console.log('all alerts', state.alerts.all);
   return {
-    alerts: getVisibleAlerts(state.alerts, state.visibilityFilter),
+    isFetching: state.alerts.isFetching,
+    alerts: getVisibleAlerts(state.alerts.all, state.visibilityFilter),
     visibilityFilter: state.visibilityFilter
   }
 }

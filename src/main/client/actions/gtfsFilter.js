@@ -1,3 +1,11 @@
+export const updateGtfsFilter = (activeProject, user) => {
+  return {
+    type: 'UPDATE_GTFS_FILTER',
+    activeProject,
+    user
+  }
+}
+
 export const addActiveFeed = (feed) => {
   return {
     type: 'ADD_ACTIVE_FEED',

@@ -1,12 +1,23 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware, combineReducers } from 'redux'
+import thunkMiddleware from 'redux-thunk'
+import { createHistory } from 'history'
+import { useRouterHistory, browserHistory } from 'react-router'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 
-import alertsApp from './reducers'
 import App from './containers/App'
 
-let store = createStore(alertsApp)
+import * as reducers from './reducers'
+
+const store = createStore(
+  combineReducers({
+    ...reducers,
+    routing: routerReducer
+  }),
+  applyMiddleware(thunkMiddleware)
+)
 
 console.log('initial store', store.getState())
 
@@ -16,8 +27,17 @@ let unsubscribe = store.subscribe(() =>
   console.log('store updated', store.getState())
 )
 
+/*const historyWithBasename = useRouterHistory(createHistory)({
+    basename: "/client/"
+});
+
+const appHistory = syncHistoryWithStore(historyWithBasename, store)*/
+
+const appHistory = syncHistoryWithStore(browserHistory, store)
+
+
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <App history={appHistory} />
   </Provider>,
   document.getElementById('main'))

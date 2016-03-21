@@ -1,5 +1,4 @@
 import update from 'react-addons-update'
-import config from '../config'
 
 const gtfsFilter = (state = {
   allFeeds: [],
@@ -8,8 +7,26 @@ const gtfsFilter = (state = {
   let activeFeeds
 
   switch (action.type) {
-    case 'USER_LOGGED_IN':
-      let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
+    case 'UPDATE_GTFS_FILTER':
+      let userFeeds = []
+      if(action.user.permissions.isProjectAdmin(action.activeProject.id)) {
+        userFeeds = action.activeProject.feeds
+      }
+      else if(action.user.permissions.hasProjectPermission(action.activeProject.id, 'edit-alert')) {
+        const permission = action.user.permissions.getProjectPermission(action.activeProject.id, 'edit-alert')
+        let userFeedIds = permission.feeds || action.user.permissions.getProjectDefaultFeeds(action.activeProject.id)
+        userFeeds = action.activeProject.feeds.filter((feed) => {
+          return userFeedIds.indexOf(feed.id) !== -1
+        })
+      }
+      let validatedFeeds = userFeeds.filter((feed) => {
+        return feed.latestVersionId !== undefined
+      })
+      return update(state, {
+        allFeeds: {$set: validatedFeeds},
+        activeFeeds: {$set: validatedFeeds}
+      })
+      /*let activeIndex = action.projects.findIndex(p => p.id == config.activeProjectId)
       if(activeIndex !== -1) {
         let userFeeds = []
         if(action.user.permissions.isProjectAdmin(config.activeProjectId)) {
@@ -30,7 +47,7 @@ const gtfsFilter = (state = {
           allFeeds: {$set: validatedFeeds},
           activeFeeds: {$set: validatedFeeds}
         })
-      }
+      }*/
 
     case 'ADD_ACTIVE_FEED':
       activeFeeds = [

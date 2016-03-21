@@ -3,13 +3,14 @@ import update from 'react-addons-update'
 const activeAlert = (state = null, action) => {
   let entities, foundIndex
   switch (action.type) {
+    case 'UPDATE_ACTIVE_ALERT':
     case 'CREATE_ALERT':
     case 'EDIT_ALERT':
       return action.alert
-    case 'SAVE_ALERT':
+    /*case 'SAVE_ALERT':
     case 'DELETE_ALERT':
     case 'SET_ACTIVE_PUBLISHED':
-      return null
+      return null*/
 
     case 'SET_ACTIVE_TITLE':
       return update(state, {title: {$set: action.title}})
@@ -87,7 +88,7 @@ const activeAlert = (state = null, action) => {
             ]
             return update(state, {affectedEntities: {$set: entities}})
         }
-        
+
       }
       return state
     case 'DELETE_ACTIVE_AFFECTED_ENTITY':

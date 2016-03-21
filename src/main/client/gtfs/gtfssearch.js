@@ -9,8 +9,6 @@ import { PureComponent, shallowEqual } from 'react-pure-render'
 
 import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leaflet'
 
-import config from '../config'
-
 import Select from 'react-select'
 
 export default class GtfsSearch extends React.Component {
@@ -80,7 +78,7 @@ export default class GtfsSearch extends React.Component {
         })
     }
     const getOptions = (input) => {
-      
+
       const entities = typeof this.props.entities !== 'undefined' ? this.props.entities : ['routes', 'stops']
 
       if (entities.length === 1 && entities[0] === 'stops'){

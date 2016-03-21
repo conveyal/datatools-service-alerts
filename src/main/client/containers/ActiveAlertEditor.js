@@ -37,7 +37,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     endChanged: (end) => dispatch(setActiveEnd(end)),
     onAddEntityClick: (type, value) => dispatch(addActiveEntity(type, value)),
     onDeleteEntityClick: (entity) => dispatch(deleteActiveEntity(entity)),
-    entityUpdated: (entity, field, value) => dispatch(updateActiveEntity(entity, field, value))
+    entityUpdated: (entity, field, value) => dispatch(updateActiveEntity(entity, field, value)),
+
+    editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
+    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route)),
   }
 }
 
