@@ -22,19 +22,30 @@ export default class AffectedEntity extends React.Component {
       const type = entity.type
       const val = entity[type.toLowerCase()]
       console.log('val', val)
-      // if (typeof val != 'undefined') {
+      const routeName = typeof entity.route !== 'undefined' ? entity.route.route_short_name || val.route_long_name : entity.route_id
+      let stopName = typeof entity.stop !== 'undefined' ? `${entity.stop.stop_name} (${getFeed(entity.stop.feed_id).name})` : entity.stop_id
+      let summary = ''
         switch (type) { 
           case 'AGENCY' :
             return val.name
           case 'STOP' :
-            // return `${val.stop_name} (${getFeed(val.feed_id).name})`
-            return typeof val !== 'undefined' ? `${val.stop_name} (${getFeed(val.feed_id).name})` : entity.stop_id
+            summary = stopName
+            if (typeof routeName !== 'undefined'){
+              summary += ` for ${routeName}`
+            }
+            return summary 
           case 'ROUTE' :
-            const routeName = val.route_short_name || val.route_long_name
-            // return `${routeName} (${getFeed(val.feed_id).name})`
-            return typeof val !== 'undefined' ? routeName : entity.route_id
+            summary = routeName
+            if (typeof stopName !== 'undefined'){
+              summary += ` at ${stopName}`
+            }
+            return summary 
           case 'MODE' :
-            return val.name
+            summary = val.name
+            if (typeof stopName !== 'undefined'){
+              summary += ` at ${stopName}`
+            }
+            return summary
         }
       // }
       // else {
