@@ -95,23 +95,23 @@ const alerts = (state = {
               id: ent.Id,
             }
 
-            if(ent.AgencyId) {
+            if(ent.AgencyId !== null) {
               let feed = project.feeds.find(f => f.defaultGtfsId === ent.AgencyId)
               entity.agency = feed
               entity.type = 'AGENCY'
             }
 
             // stop goes ahead of route type and route because it's an optional field in the below
-            if(ent.StopId) {
+            if(ent.StopId !== null) {
               entity.stop_id = ent.StopId
               entity.type = 'STOP'
             }
-            if(ent.RouteId) {
+            if(ent.RouteId !== null) {
               entity.route_id = ent.RouteId
               entity.type = 'ROUTE'
             }
 
-            if(ent.RouteType) {
+            if(ent.RouteType !== null) {
               let mode = modes.find(m => m.gtfsType === ent.RouteType)
 
               // catch any integers outside of 0 -7 range
