@@ -67,13 +67,19 @@ export default class GtfsSearch extends React.Component {
     }
     const getRoutes = (input) => {
       const feedIds = this.props.feeds.map(feed => feed.id)
+      const getRouteName = (route) => {
+        let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
+          route.route_long_name ? route.route_long_name :
+          route.route_short_name ? route.route_short_name : null
+        return routeName
+      }
       const url = input ? `/api/routes?name=${input}&feed=${feedIds.toString()}` : `/api/routes?feed=${feedIds.toString()}`
       return fetch(url)
         .then((response) => {
           return response.json()
         })
         .then((json) => {
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name}`, agency: getFeed(route.feed_id)}))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(route.feed_id)}))
           return { options: routeOptions }
         })
     }

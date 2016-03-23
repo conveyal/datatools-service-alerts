@@ -58,6 +58,8 @@ export default class AlertsList extends React.Component {
             return <AlertPreview
               alert={alert}
               key={alert.id}
+              editableFeeds={this.props.editableFeeds}
+              publishableFeeds={this.props.publishableFeeds}
               onEditClick={this.props.onEditClick}
               onZoomClick={this.props.onZoomClick}
               onDeleteClick={this.props.onDeleteClick}

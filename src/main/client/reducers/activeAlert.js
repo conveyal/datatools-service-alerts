@@ -42,7 +42,9 @@ const activeAlert = (state = null, action) => {
             let updatedEntity = update(action.entity, {
               type: {$set: action.value},
               stop: {$set: null},
-              route: {$set: null}
+              route: {$set: null},
+              stop_id: {$set: null},
+              route_id: {$set: null}
             })
             entities = [
               ...state.affectedEntities.slice(0, foundIndex),
@@ -67,8 +69,10 @@ const activeAlert = (state = null, action) => {
             ]
             return update(state, {affectedEntities: {$set: entities}})
           case 'STOP':
+            let stopId = action.value !== null ? action.value.stop_id : null
             updatedEntity = update(action.entity, {
               stop: {$set: action.value},
+              stop_id: {$set: stopId}
               // agency: {$set: action.value}
               // TODO: update agency id from feed id?
             })
@@ -79,8 +83,10 @@ const activeAlert = (state = null, action) => {
             ]
             return update(state, {affectedEntities: {$set: entities}})
           case 'ROUTE':
+            let routeId = action.value !== null ? action.value.route_id : null
             updatedEntity = update(action.entity, {
-              route: {$set: action.value}
+              route: {$set: action.value},
+              route_id: {$set: routeId}
               // TODO: update agency id from feed id?
             })
             entities = [

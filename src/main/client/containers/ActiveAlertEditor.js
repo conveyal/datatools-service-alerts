@@ -19,7 +19,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     alert: state.activeAlert,
     activeFeeds: state.gtfsFilter.activeFeeds,
-    editableFeeds: state.projects.active.feeds.sort(agencyCompare)
+    editableFeeds: state.projects.active.feeds.sort(agencyCompare).filter(f => f.id === 'a383c129-9904-4926-ad71-2d59ae8074a7')
   }
 }
 

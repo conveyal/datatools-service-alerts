@@ -11,6 +11,30 @@ export default class AlertPreview extends React.Component {
   }
 
   render () {
+    var feeds = this.props.alert.affectedEntities.map((ent) => {
+      return ent.agency
+    })
+    var uniqueFeeds = [...new Set(feeds)]
+    console.log('feeds for alert #' + this.props.alert.id, uniqueFeeds)
+    console.log(this.props.editableFeeds)
+    const compareFeedSets = (editableFeeds, feedsInAlert) => {
+      let matchedFeeds = []
+      for (var i = 0; i < editableFeeds.length; i++) {
+        const feed = feedsInAlert.find((f) => { return editableFeeds[i].id === f.id })
+        if (typeof feed !== 'undefined')
+          matchedFeeds.push(feed)
+      }
+      console.log(matchedFeeds)
+      if (matchedFeeds.length !== feedsInAlert.length){
+        return false
+      }
+      else{
+        return true
+      }
+    }
+    const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeeds)
+    const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeeds)
+    console.log(publishingIsDisabled)
     return (
       <Panel collapsible header={
         <Row>
@@ -19,10 +43,10 @@ export default class AlertPreview extends React.Component {
           </Col>
           <Col xs={4}>
             <ButtonGroup className='pull-right'>
-              <Button onClick={() => this.props.onEditClick(this.props.alert)}>
+              <Button disabled={editingIsDisabled} onClick={() => this.props.onEditClick(this.props.alert)}>
                 <Glyphicon glyph="pencil" />
               </Button>
-              <Button onClick={() => this.props.onDeleteClick(this.props.alert)}>
+              <Button disabled={publishingIsDisabled} onClick={() => this.props.onDeleteClick(this.props.alert)}>
                 <Glyphicon glyph="remove" />
               </Button>
             </ButtonGroup>

@@ -18,12 +18,18 @@ export default class AffectedEntity extends React.Component {
     const getFeed = (id) => {
       return this.props.feeds.find((feed) => feed.id === id )
     }
+    const getRouteName = (route) => {
+      let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
+        route.route_long_name ? route.route_long_name :
+        route.route_short_name ? route.route_short_name : null
+      return routeName
+    }
     const getEntitySummary = (entity) => {
       const type = entity.type
       const val = entity[type.toLowerCase()]
       console.log('val', val)
-      const routeName = typeof entity.route !== 'undefined' ? entity.route.route_short_name || val.route_long_name : entity.route_id
-      let stopName = typeof entity.stop !== 'undefined' ? `${entity.stop.stop_name} (${getFeed(entity.stop.feed_id).name})` : entity.stop_id
+      const routeName = typeof entity.route !== 'undefined' && entity.route !== null ? getRouteName(entity.route) : entity.route_id
+      let stopName = typeof entity.stop !== 'undefined' && entity.stop !== null ? `${entity.stop.stop_name} (${getFeed(entity.stop.feed_id).name})` : entity.stop_id
       let summary = ''
         switch (type) { 
           case 'AGENCY' :
@@ -47,11 +53,6 @@ export default class AffectedEntity extends React.Component {
             }
             return summary
         }
-      // }
-      // else {
-        // return 'entity not found'
-      // }
-      
     }
 
     return (
@@ -74,6 +75,7 @@ export default class AffectedEntity extends React.Component {
           var indent = {
             paddingLeft: '30px'
           }
+          let selectedFeeds = [this.props.entity.agency] || this.props.feeds
           switch (this.props.entity.type) {
             case "AGENCY":
               return (
@@ -104,7 +106,7 @@ export default class AffectedEntity extends React.Component {
                     />
                     <span><i>Refine by Stop:</i></span>
                     <StopSelector
-                      feeds={this.props.feeds}
+                      feeds={selectedFeeds}
                       stop={this.props.entity.stop}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -126,7 +128,7 @@ export default class AffectedEntity extends React.Component {
                   <div style={indent}>
                     <span><i>Refine by Route:</i></span>
                     <RouteSelector
-                      feeds={this.props.feeds}
+                      feeds={selectedFeeds}
                       route={this.props.entity.route}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -148,7 +150,7 @@ export default class AffectedEntity extends React.Component {
                   <div style={indent}>
                     <span><i>Refine by Stop:</i></span>
                     <StopSelector
-                      feeds={this.props.feeds}
+                      feeds={selectedFeeds}
                       stop={this.props.entity.stop}
                       entityUpdated={this.props.entityUpdated}
                       entity={this.props.entity}
@@ -234,6 +236,12 @@ class RouteSelector extends React.Component {
     const getFeed = (id) => {
       return this.props.feeds.find((feed) => feed.id === id )
     }
+    const getRouteName = (route) => {
+      let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
+        route.route_long_name ? route.route_long_name :
+        route.route_short_name ? route.route_short_name : null
+      return routeName
+    }
     var routes = []
     const agencyName = typeof this.state.route !== 'undefined' ? getFeed(this.state.route.feed_id).name : null
     return (
@@ -249,7 +257,7 @@ class RouteSelector extends React.Component {
             else if (evt == null)
               this.props.entityUpdated(this.props.entity, "ROUTE", null, null)
           }}
-          value={this.state.route ? {'value': this.state.route.route_id, 'label': `${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (${agencyName})`} : ''}
+          value={this.state.route ? {'value': this.state.route.route_id, 'label': `${getRouteName(this.state.route)} (${agencyName})`} : ''}
         />
       </div>
     )
