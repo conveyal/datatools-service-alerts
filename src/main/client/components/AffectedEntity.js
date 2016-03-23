@@ -22,17 +22,25 @@ export default class AffectedEntity extends React.Component {
       const type = entity.type
       const val = entity[type.toLowerCase()]
       console.log('val', val)
-      switch (type) {
-        case 'AGENCY' :
-          return val.name
-        case 'STOP' :
-          return `${val.stop_name} (${getFeed(val.feed_id).name})`
-        case 'ROUTE' :
-          const routeName = val.route_short_name || val.route_long_name
-          return `${routeName} (${getFeed(val.feed_id).name})`
-        case 'MODE' :
-          return val.name
-      }
+      // if (typeof val != 'undefined') {
+        switch (type) { 
+          case 'AGENCY' :
+            return val.name
+          case 'STOP' :
+            // return `${val.stop_name} (${getFeed(val.feed_id).name})`
+            return typeof val !== 'undefined' ? `${val.stop_name} (${getFeed(val.feed_id).name})` : entity.stop_id
+          case 'ROUTE' :
+            const routeName = val.route_short_name || val.route_long_name
+            // return `${routeName} (${getFeed(val.feed_id).name})`
+            return typeof val !== 'undefined' ? routeName : entity.route_id
+          case 'MODE' :
+            return val.name
+        }
+      // }
+      // else {
+        // return 'entity not found'
+      // }
+      
     }
 
     return (
@@ -216,6 +224,7 @@ class RouteSelector extends React.Component {
       return this.props.feeds.find((feed) => feed.id === id )
     }
     var routes = []
+    const agencyName = typeof this.state.route !== 'undefined' ? getFeed(this.state.route.feed_id).name : null
     return (
       <div>
         <GtfsSearch
@@ -225,11 +234,11 @@ class RouteSelector extends React.Component {
           onChange={(evt) => {
             console.log(this.state.value)
             if (typeof evt !== 'undefined' && evt !== null)
-              this.props.entityUpdated(this.props.entity, "ROUTE", evt.route)
+              this.props.entityUpdated(this.props.entity, "ROUTE", evt.route, evt.agency)
             else if (evt == null)
-              this.props.entityUpdated(this.props.entity, "ROUTE", null)
+              this.props.entityUpdated(this.props.entity, "ROUTE", null, null)
           }}
-          value={this.state.route ? {'value': this.state.route.route_id, 'label': `(${getFeed(this.state.route.feed_id).name}) ${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (route)`} : ''}
+          value={this.state.route ? {'value': this.state.route.route_id, 'label': `${this.state.route.route_short_name !== null ? this.state.route.route_short_name : this.state.route.route_long_name} (${agencyName})`} : ''}
         />
       </div>
     )
@@ -253,6 +262,7 @@ class StopSelector extends React.Component {
     }
 
     var stops = []
+    const agencyName = typeof this.state.stop !== 'undefined' ? getFeed(this.state.stop.feed_id).name : null
     return (
       <div>
         <GtfsSearch
@@ -262,11 +272,11 @@ class StopSelector extends React.Component {
           onChange={(evt) => {
             console.log(this.state.value)
             if (typeof evt !== 'undefined' && evt !== null)
-              this.props.entityUpdated(this.props.entity, "STOP", evt.stop)
+              this.props.entityUpdated(this.props.entity, "STOP", evt.stop, evt.agency)
             else if (evt == null)
-              this.props.entityUpdated(this.props.entity, "STOP", null)
+              this.props.entityUpdated(this.props.entity, "STOP", null, null)
           }}
-          value={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `(${getFeed(this.state.stop.feed_id).name}) ${this.state.stop.stop_name}`} : ''}
+          value={this.state.stop ? {'value': this.state.stop.stop_id, 'label': `${this.state.stop.stop_name} (${agencyName})`} : ''}
         />
 
       </div>

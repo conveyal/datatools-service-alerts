@@ -8,7 +8,6 @@ export default class AlertsList extends React.Component {
   constructor (props) {
     super(props)
   }
-
   render () {
 
     let sortedAlerts = this.props.alerts.sort((a,b) => {

@@ -43,6 +43,9 @@ export default class AlertEditor extends React.Component {
   render () {
     console.log('AlertEditor')
     console.log(this.props.alert)
+    const getFeed = (id) => {
+      return this.props.editableFeeds.find((feed) => feed.id === id )
+    }
     return (
       <div>
         <ManagerNavbar />
@@ -97,7 +100,9 @@ export default class AlertEditor extends React.Component {
                   this.props.onPublishClick(this.props.alert, !this.props.alert.published)
                 }}>
                   {this.props.alert.published ? 'Unpublish' : 'Publish'}</Button>
-
+                <Button onClick={(evt) => {
+                  this.props.onDeleteClick(this.props.alert)
+                }}>Delete</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -165,7 +170,7 @@ export default class AlertEditor extends React.Component {
                             <Button style={{marginRight: '5px'}} onClick={(evt) => this.props.onAddEntityClick('AGENCY', this.props.editableFeeds[0])}>
                               Add Agency
                             </Button>
-                            <Button onClick={(evt) => this.props.onAddEntityClick('MODE', {gtfsType: 0, name: 'Tram/LRT'})}>
+                            <Button onClick={(evt) => this.props.onAddEntityClick('MODE', {gtfsType: 0, name: 'Tram/LRT'}, this.props.editableFeeds[0])}>
                               Add Mode
                             </Button>
                           </Col>
@@ -178,10 +183,12 @@ export default class AlertEditor extends React.Component {
                               onChange={(evt) => {
                                 console.log('we need to add this entity to the store', evt)
                                 if (typeof evt !== 'undefined' && evt !== null){
-                                  if (evt.stop)
-                                    this.props.onAddEntityClick('STOP', evt.stop)
+                                  if (evt.stop){
+                                    this.props.onAddEntityClick('STOP', evt.stop, evt.agency)//getFeed(evt.stop.feed_id))
+                                    // this.props.entityUpdated(newEntity, 'AGENCY', evt.agency)//getFeed(evt.stop.feed_id))
+                                  }
                                   else if (evt.route)
-                                    this.props.onAddEntityClick('ROUTE', evt.route)
+                                    this.props.onAddEntityClick('ROUTE', evt.route, evt.agency)
                                 }
                               }}
                             />
