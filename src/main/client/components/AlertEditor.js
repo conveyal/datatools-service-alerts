@@ -214,8 +214,8 @@ export default class AlertEditor extends React.Component {
               <GlobalGtfsFilter />
               <GtfsMapSearch
                 feeds={this.props.activeFeeds}
-                onStopClick={this.props.onStopClick}
-                onRouteClick={this.props.onRouteClick}
+                onStopClick={this.props.editorStopClick}
+                onRouteClick={this.props.editorRouteClick}
                 popupAction='Add'
               />
             </Col>
