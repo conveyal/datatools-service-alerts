@@ -42,7 +42,7 @@ export default class GtfsSearch extends React.Component {
     }
   }
   renderOption (option) {
-    return <span style={{ color: 'black' }}>{option.stop ? <Glyphicon glyph="map-marker" /> : <Glyphicon glyph="option-horizontal" />} {option.label} <Label>{option.agency}</Label> {option.link}</span>
+    return <span style={{ color: 'black' }}>{option.stop ? <Glyphicon glyph="map-marker" /> : <Glyphicon glyph="option-horizontal" />} {option.label} <Label>{option.agency.name}</Label> {option.link}</span>
   }
   onChange (value) {
     this.setState({value})
@@ -61,7 +61,7 @@ export default class GtfsSearch extends React.Component {
           return response.json()
         })
         .then((json) => {
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(stop.feed_id).name}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(stop.feed_id)}))
           return { options: stopOptions }
         })
     }
@@ -73,7 +73,7 @@ export default class GtfsSearch extends React.Component {
           return response.json()
         })
         .then((json) => {
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name}`, agency: getFeed(route.feed_id).name}))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${route.route_short_name !== null ? route.route_short_name : route.route_long_name}`, agency: getFeed(route.feed_id)}))
           return { options: routeOptions }
         })
     }
@@ -110,7 +110,7 @@ export default class GtfsSearch extends React.Component {
       autoload={true}
       cacheAsyncResults={false}
       filterOptions={false}
-      minimumInput={1}
+      minimumInput={3}
       clearable={this.props.clearable}
       placeholder={this.props.placeholder || placeholder}
       loadOptions={getOptions}

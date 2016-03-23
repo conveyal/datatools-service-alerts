@@ -44,10 +44,9 @@ export default class GtfsMap extends React.Component {
     //console.log(this.state.stops)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
-    var feedMap = this.props.feeds.reduce((map, obj) => {
-      map[obj.id] = obj.shortName !== null ? obj.shortName : obj.name;
-      return map;
-    }, {})
+    const getFeed = (id) => {
+      return this.props.feeds.find((feed) => feed.id === id )
+    }
 
     const handleSelection = (input) => {
       this.onChange(input)
@@ -98,10 +97,10 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
+                      <li><strong>Agency:</strong> {getFeed(stop.feed_id).name}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>{this.props.popupAction} {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -120,10 +119,10 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {feedMap[stop.feed_id]}</li>
+                      <li><strong>Agency:</strong> {getFeed(stop.feed_id).name}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop)}>{this.props.popupAction} {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -141,9 +140,9 @@ export default class GtfsMap extends React.Component {
                     <h3>{routeName}</h3>
                     <ul>
                       <li><strong>ID:</strong> {route.route_id}</li>
-                      <li><strong>Agency:</strong> {feedMap[route.feed_id]}</li>
+                      <li><strong>Agency:</strong> {getFeed(route.feed_id).name}</li>
                     </ul>
-                    <Button href="#" onClick={() => this.props.onRouteClick(route)}>{this.props.popupAction} {route.route_id}</Button>
+                    <Button href="#" onClick={() => this.props.onRouteClick(route, getFeed(route.feed_id))}>{this.props.popupAction} {route.route_id}</Button>
                   </div>
                 </Popup>
               </GeoJson>
