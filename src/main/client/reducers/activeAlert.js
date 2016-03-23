@@ -4,6 +4,7 @@ const activeAlert = (state = null, action) => {
   let entities, foundIndex
   switch (action.type) {
     case 'UPDATE_ACTIVE_ALERT':
+      console.log('update active alert', action.alert)
     case 'CREATE_ALERT':
     case 'EDIT_ALERT':
       return action.alert
@@ -67,7 +68,8 @@ const activeAlert = (state = null, action) => {
             return update(state, {affectedEntities: {$set: entities}})
           case 'STOP':
             updatedEntity = update(action.entity, {
-              stop: {$set: action.value}
+              stop: {$set: action.value},
+              // agency: {$set: action.value}
               // TODO: update agency id from feed id?
             })
             entities = [

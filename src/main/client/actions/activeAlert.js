@@ -56,15 +56,19 @@ export const setActivePublished = (published) => {
   }
 }
 
-let nextEntityId = 0
-export const addActiveEntity = (field = 'AGENCY', value = null) => {
-  nextEntityId++
+let nextEntityId = -1
+export const addActiveEntity = (field = 'AGENCY', value = null, agency = null) => {
+  nextEntityId--
   let newEntity = {
     type: 'ADD_ACTIVE_AFFECTED_ENTITY',
     entity: {
       id: nextEntityId,
-      type: field,
+      type: field
     }
+  }
+  // set agency of new entity
+  if (agency){
+    newEntity.entity.agency = agency
   }
   newEntity.entity[field.toLowerCase()] = value
   return newEntity
@@ -77,11 +81,12 @@ export const deleteActiveEntity = (entity) => {
   }
 }
 
-export const updateActiveEntity = (entity, field, value) => {
+export const updateActiveEntity = (entity, field, value, agency) => {
   return {
     type: 'UPDATE_ACTIVE_ENTITY',
     entity,
     field,
-    value
+    value,
+    agency
   }
 }

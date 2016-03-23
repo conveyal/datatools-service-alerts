@@ -8,7 +8,7 @@ import moment from 'moment'
 let nextAlertId = 0
 let nextStopEntityId = 100
 
-export function createAlert (entity) {
+export function createAlert (entity, agency) {
   return function (dispatch, getState) {
     nextAlertId--
     let entities = []
@@ -20,6 +20,10 @@ export function createAlert (entity) {
         id: nextStopEntityId,
         type: type
       }
+
+      if (agency !== null)
+        newEntity.agency = agency
+      
       const typeKey = type.toLowerCase()
       newEntity[typeKey] = entity
       entities.push(newEntity)
@@ -79,15 +83,36 @@ export function createAlert (entity) {
 }*/
 
 export const deleteAlert = (alert) => {
-  return {
-    type: 'DELETE_ALERT',
-    alert
+  return function (dispatch, getState){
+    console.log('deleting', alert)
+    const url = getState().config.rtdApi + '/' + alert.id
+    const method = 'delete'
+    console.log('url/method', url, method)
+    fetch(url, {
+      method,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then((res) => {
+      console.log('status='+res.status)
+      browserHistory.push('/')
+      dispatch(fetchRtdAlerts())
+    })
   }
 }
 
 export const requestRtdAlerts = () => {
   return {
     type: 'REQUEST_RTD_ALERTS',
+  }
+}
+
+export const receivedGtfsEntities = (gtfsObjects, gtfsAlerts) => {
+  return {
+    type: 'RECEIVED_GTFS_ENTITIES',
+    gtfsObjects,
+    gtfsAlerts
   }
 }
 
@@ -107,6 +132,26 @@ export function fetchRtdAlerts() {
       return res.json()
     }).then((alerts) => {
       return dispatch(receivedRtdAlerts(alerts, getState().projects.active))
+    }).then(() => {
+      console.log('done with all that', getState().alerts.entities)
+      let feed = getState().projects.active
+      const fetchFunctions = getState().alerts.entities.map((entity) => {
+        console.log(entity)
+        // if (typeof entity !== 'undefined')
+          return fetchEntity(entity, feed)
+      })//.filter((val) => typeof val !== 'undefined')
+      return Promise.all(fetchFunctions)
+      .then((results) => {
+        console.log('promise results', results)
+        let newEntities = getState().alerts.entities
+        for (var i = 0; i < newEntities.length; i++) {
+          newEntities[i].gtfs = results[i]
+        }
+        dispatch(receivedGtfsEntities(newEntities, getState().alerts.all))
+      }).then((error) => {
+        console.log('error', error)
+      })
+
     })
   }
 }
@@ -125,11 +170,26 @@ export function editAlert(alert) {
   }
 }
 
+export function fetchEntity(entity, activeProject) {
+
+  const feed = activeProject.feeds.find(f => f.defaultGtfsId === entity.entity.AgencyId)
+  const url = entity.type === 'stop' ? `/api/stops/${entity.entity.StopId}?feed=${feed.id}` : `/api/routes/${entity.entity.RouteId}?feed=${feed.id}`
+  return fetch(url)
+  .then((response) => {
+    return response.json()
+  })
+  .then((object) => {
+    return object
+  }).catch((error) => {
+    // console.log('caught', error)
+  })
+}
+
 export function saveAlert(alert) {
   return function (dispatch, getState) {
     console.log('saving...')
     var json = {
-      Id: null,
+      Id: alert.id < 0 ? null : alert.id,
       HeaderText: alert.title || 'New Alert',
       DescriptionText: alert.description || '',
       Url: alert.url || '',
@@ -141,7 +201,7 @@ export function saveAlert(alert) {
       ServiceAlertEntities: alert.affectedEntities.map((entity) => {
         console.log('ent', entity)
         return {
-          Id: entity.id,
+          Id: entity.id < 0 ? null : entity.id,
           AlertId: alert.id,
           AgencyId: entity.agency ? entity.agency.defaultGtfsId : null,
           RouteId: entity.route ? entity.route.route_id : null,
