@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import moment from 'moment'
 
-import { editAlert } from '../actions/alerts'
+import { editAlert, deleteAlert } from '../actions/alerts'
 import { setVisibilitySearchText, setVisibilityFilter } from '../actions/visibilityFilter'
 
 import AlertsList from '../components/AlertsList'
@@ -39,6 +39,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     onEditClick: (alert) => dispatch(editAlert(alert)),
+    onDeleteClick: (alert) => dispatch(deleteAlert(alert)),
     searchTextChanged: (text) => dispatch(setVisibilitySearchText(text)),
     visibilityFilterChanged: (filter) => dispatch(setVisibilityFilter(filter))
   }

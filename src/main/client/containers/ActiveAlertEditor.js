@@ -24,6 +24,9 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
+  const getFeed = (id) => {
+    return this.props.feeds.find((feed) => feed.id === id )
+  }
   return {
     onSaveClick: (alert) => dispatch(saveAlert(alert)),
     onDeleteClick: (alert) => dispatch(deleteAlert(alert)),
@@ -35,12 +38,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     effectChanged: (effect) => dispatch(setActiveEffect(effect)),
     startChanged: (start) => dispatch(setActiveStart(start)),
     endChanged: (end) => dispatch(setActiveEnd(end)),
-    onAddEntityClick: (type, value) => dispatch(addActiveEntity(type, value)),
+    onAddEntityClick: (type, value, agency) => dispatch(addActiveEntity(type, value, agency)),
     onDeleteEntityClick: (entity) => dispatch(deleteActiveEntity(entity)),
-    entityUpdated: (entity, field, value) => dispatch(updateActiveEntity(entity, field, value)),
+    entityUpdated: (entity, field, value, agency) => dispatch(updateActiveEntity(entity, field, value, agency)),
 
-    editorStopClick: (stop) => dispatch(addActiveEntity('STOP', stop)),
-    editorRouteClick: (route) => dispatch(addActiveEntity('ROUTE', route)),
+    editorStopClick: (stop, agency) => dispatch(addActiveEntity('STOP', stop, agency)),
+    editorRouteClick: (route, agency) => dispatch(addActiveEntity('ROUTE', route, agency))
   }
 }
 

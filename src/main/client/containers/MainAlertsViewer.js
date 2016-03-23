@@ -14,8 +14,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    onStopClick: (stop) => dispatch(createAlert(stop)),
-    onRouteClick: (route) => dispatch(createAlert(route)),
+    onStopClick: (stop, agency) => dispatch(createAlert(stop, agency)),
+    onRouteClick: (route, agency) => dispatch(createAlert(route, agency)),
   }
 }
 
