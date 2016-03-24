@@ -7,7 +7,7 @@ import GtfsSearch from '../gtfs/gtfssearch'
 
 import modes from '../modes'
 
-import { getFeed } from '../util/util'
+import { getFeed, FEEDID } from '../util/util'
 
 export default class AffectedEntity extends React.Component {
   constructor (props) {
@@ -24,15 +24,25 @@ export default class AffectedEntity extends React.Component {
       return routeName
     }
     const getEntitySummary = (entity) => {
+      console.log(entity)
       const type = entity.type
       const val = entity[type.toLowerCase()]
       console.log('val', val)
+      let agencyName = ''
+      if (typeof entity.agency !== 'undefined' && entity.agency !== null){
+        agencyName = entity.agency.name
+      }
+      else if (typeof entity.stop !== 'undefined' && entity.stop !== null){
+        const feed = getFeed(this.props.feeds, entity.stop.feed_id)
+        agencyName = typeof feed !== 'undefined' ? feed.name : 'Unknown agency'
+      }
+      
       const routeName = typeof entity.route !== 'undefined' && entity.route !== null ? getRouteName(entity.route) : entity.route_id
-      let stopName = typeof entity.stop !== 'undefined' && entity.stop !== null ? `${entity.stop.stop_name} (${getFeed(this.props.feeds, entity.stop.feed_id).name})` : entity.stop_id
+      let stopName = typeof entity.stop !== 'undefined' && entity.stop !== null ? `${entity.stop.stop_name} (${agencyName})` : entity.stop_id
       let summary = ''
         switch (type) { 
           case 'AGENCY' :
-            return val.name
+            return agencyName
           case 'STOP' :
             summary = stopName
             if (typeof routeName !== 'undefined'){
@@ -177,14 +187,14 @@ class AgencySelector extends React.Component {
       <div>
         <Input
           type="select"
-          value={this.props.entity.agency && this.props.entity.agency.id}
+          value={this.props.entity.agency && this.props.entity.agency[FEEDID]}
           onChange={(evt) => {
             this.props.entityUpdated(this.props.entity, "AGENCY", getFeed(this.props.feeds, evt.target.value))
           }}
           //value={this.props.entity.type}
         >
           {this.props.feeds.map((feed) => {
-            return <option key={feed.id} value={feed.id}>{feed.name}</option>
+            return <option key={feed[FEEDID]} value={feed[FEEDID]}>{feed.name}</option>
           })}
         </Input>
       </div>
@@ -233,7 +243,9 @@ class RouteSelector extends React.Component {
       return routeName
     }
     var routes = []
-    const agencyName = typeof this.state.route !== 'undefined' ? getFeed(this.props.feeds, this.state.route.feed_id).name : null
+    const feed = typeof this.state.route !== 'undefined' ? getFeed(this.props.feeds, this.state.route.feed_id) : undefined
+    const agencyName = typeof feed !== 'undefined' ? feed.name : 'Unknown agency'
+
     return (
       <div>
         <GtfsSearch
@@ -267,7 +279,8 @@ class StopSelector extends React.Component {
       return modes.find((mode) => mode.gtfsType === +id )
     }
     var stops = []
-    const agencyName = typeof this.state.stop !== 'undefined' ? getFeed(this.props.feeds, this.state.stop.feed_id).name : null
+    const feed = typeof this.state.stop !== 'undefined' ? getFeed(this.props.feeds, this.state.stop.feed_id) : undefined
+    const agencyName = typeof feed !== 'undefined' ? feed.name : 'Unkown agency'
     return (
       <div>
         <GtfsSearch

@@ -7,6 +7,8 @@ import { setVisibilitySearchText, setVisibilityFilter } from '../actions/visibil
 
 import AlertsList from '../components/AlertsList'
 
+import { getFeedsForPermission } from '../util/util'
+
 const getVisibleAlerts = (alerts, visibilityFilter) => {
   let visibleAlerts = alerts.filter(alert =>
     alert.title.toLowerCase().indexOf((visibilityFilter.searchText || '').toLowerCase()) !== -1)
@@ -26,33 +28,7 @@ const getVisibleAlerts = (alerts, visibilityFilter) => {
   }
   return visibleAlerts
 }
-const getFeedsForPermission = (projects, permissions, permission) => {
-  if (projects.active !== null && typeof permissions !== 'undefined'){
 
-    // return all feeds if user is admin
-    if (typeof permissions.appPermissionLookup['administer-application'] !== 'undefined' && permissions.appPermissionLookup['administer-application'].type === 'administer-application'){
-      return projects.active.feeds
-    }
-    // else filter by feeds listed in edit-alert permission
-    else if (typeof permissions.projectLookup[projects.active.id] !== 'undefined'){
-      console.log(permissions.projectLookup[projects.active.id])
-      console.log(permissions.projectLookup[projects.active.id].permissions)
-      
-      const permissionObject = permissions.projectLookup[projects.active.id].permissions.find(p => p.type === permission)
-      
-      if (typeof permissionObject !== 'undefined')
-        return projects.active.feeds.filter(f => permissionObject.feeds.indexOf(f.id) > -1)
-      else
-        return []
-    }
-    else{
-      return []
-    }
-  }
-  else{
-    return []
-  }
-}
 const mapStateToProps = (state, ownProps) => {
   console.log('all alerts', state.alerts.all)
   return {

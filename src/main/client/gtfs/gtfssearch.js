@@ -62,6 +62,10 @@ export default class GtfsSearch extends React.Component {
           const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(this.props.feeds, stop.feed_id)}))
           return { options: stopOptions }
         })
+        .catch((error) => {
+          console.log(error)
+          return { options: [] }
+        })
     }
     const getRoutes = (input) => {
       const feedIds = this.props.feeds.map(getFeedId)
@@ -79,6 +83,10 @@ export default class GtfsSearch extends React.Component {
         .then((json) => {
           const routeOptions = json.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(this.props.feeds, route.feed_id)}))
           return { options: routeOptions }
+        })
+        .catch((error) => {
+          console.log(error)
+          return { options: [] }
         })
     }
     const getOptions = (input) => {

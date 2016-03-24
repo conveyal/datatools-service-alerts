@@ -14,13 +14,16 @@ export default class AlertPreview extends React.Component {
     var feeds = this.props.alert.affectedEntities.map((ent) => {
       return ent.agency
     })
-    var uniqueFeeds = [...new Set(feeds)]
-    console.log('feeds for alert #' + this.props.alert.id, uniqueFeeds)
-    console.log(this.props.editableFeeds)
+    var uniqueFeedsInAlert = [...new Set(feeds)]
+    console.log('feeds for alert #' + this.props.alert.id, uniqueFeedsInAlert)
+    console.log('editableFeeds', this.props.editableFeeds)
     const compareFeedSets = (editableFeeds, feedsInAlert) => {
       let matchedFeeds = []
-      for (var i = 0; i < editableFeeds.length; i++) {
-        const feed = feedsInAlert.find((f) => { return editableFeeds[i].id === f.id })
+      for (var i = 0; i < feedsInAlert.length; i++) {
+        // console.log(feedsInAlert[i])
+
+        // for each editable feed, add it to the matched feeds array if it is in the set of alert feeds
+        const feed = editableFeeds.find((f) => { return feedsInAlert[i].id === f.id })
         if (typeof feed !== 'undefined')
           matchedFeeds.push(feed)
       }
@@ -32,8 +35,8 @@ export default class AlertPreview extends React.Component {
         return true
       }
     }
-    const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeeds)
-    const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeeds)
+    const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
+    const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
     console.log(publishingIsDisabled)
     return (
       <Panel collapsible header={

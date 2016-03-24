@@ -3,6 +3,8 @@ import { browserHistory } from 'react-router'
 
 import moment from 'moment'
 
+import { FEEDID } from '../util/util'
+
 // alerts management action
 
 let nextAlertId = 0
@@ -173,7 +175,7 @@ export function editAlert(alert) {
 export function fetchEntity(entity, activeProject) {
 
   const feed = activeProject.feeds.find(f => f.defaultGtfsId === entity.entity.AgencyId)
-  const url = entity.type === 'stop' ? `/api/stops/${entity.entity.StopId}?feed=${feed.id}` : `/api/routes/${entity.entity.RouteId}?feed=${feed.id}`
+  const url = entity.type === 'stop' ? `/api/stops/${entity.entity.StopId}?feed=${feed[FEEDID]}` : `/api/routes/${entity.entity.RouteId}?feed=${feed[FEEDID]}`
   return fetch(url)
   .then((response) => {
     return response.json()
