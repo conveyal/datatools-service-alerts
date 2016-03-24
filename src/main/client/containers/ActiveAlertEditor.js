@@ -24,9 +24,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  const getFeed = (id) => {
-    return this.props.feeds.find((feed) => feed.id === id )
-  }
   return {
     onSaveClick: (alert) => dispatch(saveAlert(alert)),
     onDeleteClick: (alert) => dispatch(deleteAlert(alert)),

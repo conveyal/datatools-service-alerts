@@ -43,9 +43,6 @@ export default class AlertEditor extends React.Component {
   render () {
     console.log('AlertEditor')
     console.log(this.props.alert)
-    const getFeed = (id) => {
-      return this.props.editableFeeds.find((feed) => feed.id === id )
-    }
     return (
       <div>
         <ManagerNavbar />
@@ -184,8 +181,7 @@ export default class AlertEditor extends React.Component {
                                 console.log('we need to add this entity to the store', evt)
                                 if (typeof evt !== 'undefined' && evt !== null){
                                   if (evt.stop){
-                                    this.props.onAddEntityClick('STOP', evt.stop, evt.agency)//getFeed(evt.stop.feed_id))
-                                    // this.props.entityUpdated(newEntity, 'AGENCY', evt.agency)//getFeed(evt.stop.feed_id))
+                                    this.props.onAddEntityClick('STOP', evt.stop, evt.agency)
                                   }
                                   else if (evt.route)
                                     this.props.onAddEntityClick('ROUTE', evt.route, evt.agency)

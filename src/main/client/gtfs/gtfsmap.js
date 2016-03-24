@@ -11,8 +11,10 @@ import { Map, Marker, Popup, TileLayer, Polyline, MapControl, GeoJson } from 're
 
 import Select from 'react-select'
 
-export default class GtfsMap extends React.Component {
+import { getFeed, getFeedId } from '../util/util'
 
+export default class GtfsMap extends React.Component {
+  
   constructor(props) {
     super(props)
 
@@ -40,13 +42,7 @@ export default class GtfsMap extends React.Component {
   }
 
   render() {
-    //console.log(this.props.stops)
-    //console.log(this.state.stops)
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
-
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
-    }
 
     const handleSelection = (input) => {
       this.onChange(input)
@@ -97,10 +93,10 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {getFeed(stop.feed_id).name}</li>
+                      <li><strong>Agency:</strong> {getFeed(this.props.feeds, stop.feed_id).name}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(this.props.feeds, stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -119,10 +115,10 @@ export default class GtfsMap extends React.Component {
                     <h3>{stop.stop_name}</h3>
                     <ul>
                       <li><strong>ID:</strong> {stop.stop_id}</li>
-                      <li><strong>Agency:</strong> {getFeed(stop.feed_id).name}</li>
+                      <li><strong>Agency:</strong> {getFeed(this.props.feeds, stop.feed_id).name}</li>
                       {stop.stop_desc && <li><strong>Desc:</strong> {stop.stop_desc}</li>}
                     </ul>
-                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
+                    <Button href="#" onClick={() => this.props.onStopClick(stop, getFeed(this.props.feeds, stop.feed_id))}>{this.props.popupAction} {stop.stop_id}</Button>
                   </div>
                 </Popup>
               </Marker>
@@ -140,9 +136,9 @@ export default class GtfsMap extends React.Component {
                     <h3>{routeName}</h3>
                     <ul>
                       <li><strong>ID:</strong> {route.route_id}</li>
-                      <li><strong>Agency:</strong> {getFeed(route.feed_id).name}</li>
+                      <li><strong>Agency:</strong> {getFeed(this.props.feeds, route.feed_id).name}</li>
                     </ul>
-                    <Button href="#" onClick={() => this.props.onRouteClick(route, getFeed(route.feed_id))}>{this.props.popupAction} {route.route_id}</Button>
+                    <Button href="#" onClick={() => this.props.onRouteClick(route, getFeed(this.props.feeds, route.feed_id))}>{this.props.popupAction} {route.route_id}</Button>
                   </div>
                 </Popup>
               </GeoJson>
@@ -155,7 +151,7 @@ export default class GtfsMap extends React.Component {
   }
 
   refreshGtfsElements(feeds) {
-    const feedIds = (feeds || this.props.feeds).map(feed => feed.id)
+    const feedIds = (feeds || this.props.feeds).map(getFeedId)
     const zoomLevel = this.refs['map'].getLeafletElement().getZoom()
     if(feedIds.length === 0 || zoomLevel <= 13) {
       this.setState({ stops : [], patterns : [], routes : [] })

@@ -11,6 +11,8 @@ import { Map, Marker, Popup, TileLayer, Polyline, MapControl } from 'react-leafl
 
 import Select from 'react-select'
 
+import { getFeed, getFeedId } from '../util/util'
+
 export default class GtfsSearch extends React.Component {
   /*
  * assuming the API returns something like this:
@@ -19,7 +21,6 @@ export default class GtfsSearch extends React.Component {
  *     { value: 'two', label: 'Two' }
  *   ]
  */
-
   // onChange={handleStopSelection}
   options = {};
 
@@ -50,23 +51,20 @@ export default class GtfsSearch extends React.Component {
   }
   render() {
     console.log('render search feeds', this.props.feeds);
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
-    }
     const getStops = (input) => {
-      const feedIds = this.props.feeds.map(feed => feed.id)
+      const feedIds = this.props.feeds.map(getFeedId)
       const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
       return fetch(url)
         .then((response) => {
           return response.json()
         })
         .then((json) => {
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(stop.feed_id)}))
+          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(this.props.feeds, stop.feed_id)}))
           return { options: stopOptions }
         })
     }
     const getRoutes = (input) => {
-      const feedIds = this.props.feeds.map(feed => feed.id)
+      const feedIds = this.props.feeds.map(getFeedId)
       const getRouteName = (route) => {
         let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
           route.route_long_name ? route.route_long_name :
@@ -79,7 +77,7 @@ export default class GtfsSearch extends React.Component {
           return response.json()
         })
         .then((json) => {
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(route.feed_id)}))
+          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(this.props.feeds, route.feed_id)}))
           return { options: routeOptions }
         })
     }

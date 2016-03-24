@@ -7,6 +7,8 @@ import GtfsSearch from '../gtfs/gtfssearch'
 
 import modes from '../modes'
 
+import { getFeed } from '../util/util'
+
 export default class AffectedEntity extends React.Component {
   constructor (props) {
     super(props)
@@ -14,9 +16,6 @@ export default class AffectedEntity extends React.Component {
   render () {
     const getMode = (id) => {
       return modes.find((mode) => mode.gtfsType === +id )
-    }
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
     }
     const getRouteName = (route) => {
       let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
@@ -29,7 +28,7 @@ export default class AffectedEntity extends React.Component {
       const val = entity[type.toLowerCase()]
       console.log('val', val)
       const routeName = typeof entity.route !== 'undefined' && entity.route !== null ? getRouteName(entity.route) : entity.route_id
-      let stopName = typeof entity.stop !== 'undefined' && entity.stop !== null ? `${entity.stop.stop_name} (${getFeed(entity.stop.feed_id).name})` : entity.stop_id
+      let stopName = typeof entity.stop !== 'undefined' && entity.stop !== null ? `${entity.stop.stop_name} (${getFeed(this.props.feeds, entity.stop.feed_id).name})` : entity.stop_id
       let summary = ''
         switch (type) { 
           case 'AGENCY' :
@@ -174,16 +173,13 @@ class AgencySelector extends React.Component {
     const getMode = (id) => {
       return modes.find((mode) => mode.gtfsType === +id )
     }
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
-    }
     return (
       <div>
         <Input
           type="select"
           value={this.props.entity.agency && this.props.entity.agency.id}
           onChange={(evt) => {
-            this.props.entityUpdated(this.props.entity, "AGENCY", getFeed(evt.target.value))
+            this.props.entityUpdated(this.props.entity, "AGENCY", getFeed(this.props.feeds, evt.target.value))
           }}
           //value={this.props.entity.type}
         >
@@ -201,9 +197,6 @@ class ModeSelector extends React.Component {
   render () {
     const getMode = (id) => {
       return modes.find((mode) => mode.gtfsType === +id )
-    }
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
     }
     return (
       <div>
@@ -233,9 +226,6 @@ class RouteSelector extends React.Component {
     const getMode = (id) => {
       return modes.find((mode) => mode.gtfsType === +id )
     }
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
-    }
     const getRouteName = (route) => {
       let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
         route.route_long_name ? route.route_long_name :
@@ -243,7 +233,7 @@ class RouteSelector extends React.Component {
       return routeName
     }
     var routes = []
-    const agencyName = typeof this.state.route !== 'undefined' ? getFeed(this.state.route.feed_id).name : null
+    const agencyName = typeof this.state.route !== 'undefined' ? getFeed(this.props.feeds, this.state.route.feed_id).name : null
     return (
       <div>
         <GtfsSearch
@@ -276,12 +266,8 @@ class StopSelector extends React.Component {
     const getMode = (id) => {
       return modes.find((mode) => mode.gtfsType === +id )
     }
-    const getFeed = (id) => {
-      return this.props.feeds.find((feed) => feed.id === id )
-    }
-
     var stops = []
-    const agencyName = typeof this.state.stop !== 'undefined' ? getFeed(this.state.stop.feed_id).name : null
+    const agencyName = typeof this.state.stop !== 'undefined' ? getFeed(this.props.feeds, this.state.stop.feed_id).name : null
     return (
       <div>
         <GtfsSearch
