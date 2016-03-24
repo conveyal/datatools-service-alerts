@@ -2,6 +2,7 @@ package com.conveyal.gtfs.datatools;
 
 import com.conveyal.gtfs.api.*;
 import com.conveyal.gtfs.datatools.controllers.ConfigController;
+import com.conveyal.gtfs.datatools.utils.FeedUpdater;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.File;
@@ -9,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static spark.SparkBase.port;
@@ -20,8 +23,11 @@ import static spark.SparkBase.staticFileLocation;
  */
 public class ServiceAlerts {
     public static final Properties config = new Properties();
+    public static String feedBucket;
+    public static String prefix;
     public static void main(String[] args) throws IOException {
         FileInputStream in;
+        List<String> eTagList = new ArrayList<>();
 
         if (args.length == 0)
             in = new FileInputStream(new File("application.conf"));
@@ -36,13 +42,15 @@ public class ServiceAlerts {
         }
         // else, use s3
         else {
-            String[] feedList  = config.getProperty("application.feed_list").split("_");
+            feedBucket = config.getProperty("application.s3.gtfs_bucket");
+            prefix = "completed/";
+            System.out.println(feedBucket);
 
-            // TODO: fetch list of feedsources from data manager instead of from application.conf
-            // TODO: figure out authentication to data manager??
-//            String url = "";
-//            InputStream response = new URL(url).openStream();
-            ApiMain.initialize(null, false, config.getProperty("application.s3.gtfs_bucket"), null, feedList);
+            // get all feeds in completed folder and save list of eTags from initialize
+            eTagList.addAll(ApiMain.initialize(null, false, feedBucket, null, null, prefix));
+
+            // set feedUpdater to poll for new feeds every half hour
+            FeedUpdater feedUpdater = new FeedUpdater(eTagList, 0, 60*30);
         }
 
 
@@ -57,6 +65,5 @@ public class ServiceAlerts {
 
         ConfigController.register("/api/");
         Routes.routes("api");
-
     }
 }
