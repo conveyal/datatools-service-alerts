@@ -43,7 +43,7 @@ public class ServiceAlerts {
         // else, use s3
         else {
             feedBucket = config.getProperty("application.s3.gtfs_bucket");
-            prefix = "completed/";
+            prefix = config.getProperty("application.s3.prefix");
             System.out.println(feedBucket);
 
             // get all feeds in completed folder and save list of eTags from initialize
