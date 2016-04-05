@@ -1,13 +1,15 @@
-export function getFeed(feeds, id) {
-  const feed = feeds.find((feed) => feed[FEEDID] === id )
+export const getFeed = (feeds, id) => {
+  // console.log(feeds, id)
+  const feed = feeds.find(f => f.externalProperties.MTC.AgencyId === id)
   return feed
 }
 
-export function getFeedId(feed){
-  return feed[FEEDID]
+export const getFeedId = (feed) => {
+  // console.log(feed)
+  return feed.externalProperties.MTC.AgencyId
 }
 
-export const FEEDID = 'defaultGtfsId'
+// export const FEEDID = 'defaultGtfsId'
 
 // export function getMode(modes, id) {
 //   return modes.find((mode) => mode.gtfsType === +id )
@@ -25,9 +27,9 @@ export const getFeedsForPermission = (projects, permissions, permission) => {
     else if (typeof permissions.projectLookup[projects.active.id] !== 'undefined'){
       console.log(permissions.projectLookup[projects.active.id])
       console.log(permissions.projectLookup[projects.active.id].permissions)
-      
+
       const permissionObject = permissions.projectLookup[projects.active.id].permissions.find(p => p.type === permission)
-      
+
       if (typeof permissionObject !== 'undefined')
         return projects.active.feeds.filter(f => permissionObject.feeds.indexOf(f.id) > -1)
       else
