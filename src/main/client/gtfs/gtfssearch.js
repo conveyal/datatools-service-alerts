@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import $ from 'jquery'
 
 import fetch from 'isomorphic-fetch'
 
@@ -14,21 +13,13 @@ import Select from 'react-select'
 import { getFeed, getFeedId } from '../util/util'
 
 export default class GtfsSearch extends React.Component {
-  /*
- * assuming the API returns something like this:
- *   const json = [
- *     { value: 'one', label: 'One' },
- *     { value: 'two', label: 'Two' }
- *   ]
- */
-  // onChange={handleStopSelection}
-  options = {};
 
-  state = {
-    stops: [],
-    routes: [],
-    value: this.props.value
-  };
+  constructor(props) {
+    super(props)
+    this.state = {
+      value: this.props.value
+    };
+  }
 
   cacheOptions (options) {
     options.forEach(o => {
@@ -39,7 +30,9 @@ export default class GtfsSearch extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (!shallowEqual(nextProps.value, this.props.value)) {
       this.setState({value: nextProps.value})
-      console.log(this.state.value)
+      console.log('props received', this.state.value)
+      // console.log()
+      this.refs.gtfsSelect.onChange()
     }
   }
   renderOption (option) {
@@ -47,82 +40,89 @@ export default class GtfsSearch extends React.Component {
   }
   onChange (value) {
     this.setState({value})
-    this.props.onChange && this.props.onChange(value && this.options[value.value])
   }
   render() {
-    console.log('render search feeds', this.props.feeds);
+    console.log('render search feeds', this.props.feeds)
     const getStops = (input) => {
       const feedIds = this.props.feeds.map(getFeedId)
-      const url = input ? `/api/stops?name=${input}&feed=${feedIds.toString()}` : `/api/stops?feed=${feedIds.toString()}`
+      console.log(feedIds)
+      const limit = this.props.limit ? '&limit=' + this.props.limit : ''
+      const nameQuery = input ? '&name=' + input : ''
+      const url = this.props.filterByRoute ? `/api/stops?route=${this.props.filterByRoute.route_id}&feed=${feedIds.toString()}${limit}` : `/api/stops?feed=${feedIds.toString()}${nameQuery}${limit}`
       return fetch(url)
         .then((response) => {
           return response.json()
         })
-        .then((json) => {
-          const stopOptions = json.map(stop => ({stop, value: stop.stop_id, label: `${stop.stop_name}`, agency: getFeed(this.props.feeds, stop.feed_id)}))
-          return { options: stopOptions }
+        .then((stops) => {
+          const stopOptions = stops !== null && stops.length > 0 ? stops.map(stop => ({stop, value: stop.stop_id, label: stop.stop_name, agency: getFeed(this.props.feeds, stop.feed_id)})) : []
+          return stopOptions
         })
         .catch((error) => {
           console.log(error)
-          return { options: [] }
+          return []
         })
     }
     const getRoutes = (input) => {
       const feedIds = this.props.feeds.map(getFeedId)
       const getRouteName = (route) => {
-        let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` : 
+        let routeName = route.route_short_name && route.route_long_name ? `${route.route_short_name} - ${route.route_long_name}` :
           route.route_long_name ? route.route_long_name :
           route.route_short_name ? route.route_short_name : null
         return routeName
       }
-      const url = input ? `/api/routes?name=${input}&feed=${feedIds.toString()}` : `/api/routes?feed=${feedIds.toString()}`
+      // don't need to use limit here
+      // const limit = this.props.limit ? '&limit=' + this.props.limit : ''
+      const nameQuery = input ? '&name=' + input : ''
+      const url = this.props.filterByStop ? `/api/routes?stop=${this.props.filterByStop.stop_id}&feed=${feedIds.toString()}` : `/api/routes?feed=${feedIds.toString()}${nameQuery}`
       return fetch(url)
         .then((response) => {
           return response.json()
         })
-        .then((json) => {
-          const routeOptions = json.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(this.props.feeds, route.feed_id)}))
-          return { options: routeOptions }
+        .then((routes) => {
+          const routeOptions = routes !== null && routes.length > 0 ? routes.map(route => ({route, value: route.route_id, label: `${getRouteName(route)}`, agency: getFeed(this.props.feeds, route.feed_id)})) : []
+          return routeOptions
         })
         .catch((error) => {
           console.log(error)
-          return { options: [] }
+          return []
         })
     }
     const getOptions = (input) => {
 
       const entities = typeof this.props.entities !== 'undefined' ? this.props.entities : ['routes', 'stops']
-
-      if (entities.length === 1 && entities[0] === 'stops'){
-        console.log('getting stops')
-        return getStops(input)
+      let entitySearches = []
+      if (entities.indexOf('stops') > -1){
+        entitySearches.push(getStops(input))
       }
-      else if (entities.length === 1 && entities[0] === 'routes'){
-        console.log('getting routes')
-        return getRoutes(input)
+      if (entities.indexOf('routes') > -1){
+        entitySearches.push(getRoutes(input))
       }
-      else{
-        return Promise.all([getStops(input), getRoutes(input)]).then((results) => {
-          const stops = results[0]
-          const routes = results[1]
-          const options = { options: [...stops.options,...routes.options] }
-          console.log('search options', options)
-          return options
-        })
-      }
+      return Promise.all(entitySearches).then((results) => {
+        const stops = results[0]
+        const routes = typeof results[1] !== 'undefined' ? results[1] : []
+        const options = { options: [...stops,...routes] }
+        console.log('search options', options)
+        return options
+      })
     }
     const handleChange = (input) => {
       this.onChange(input)
       this.props.onChange(input)
     }
 
+    const onFocus = (input) => {
+      // clear options to onFocus to ensure only valid route/stop combinations are selected
+      this.refs.gtfsSelect.loadOptions('')
+    }
+
     const placeholder = 'Begin typing to search for ' + this.props.entities.join(' or ') + '...'
     return (
     <Select.Async
-      autoload={true}
-      cacheAsyncResults={false}
+      ref='gtfsSelect'
+      cache={false}
+      onFocus={onFocus}
       filterOptions={false}
-      minimumInput={3}
+      minimumInput={this.props.minimumInput !== null ? this.props.minimumInput : 1}
       clearable={this.props.clearable}
       placeholder={this.props.placeholder || placeholder}
       loadOptions={getOptions}

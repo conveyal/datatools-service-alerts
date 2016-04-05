@@ -58,11 +58,11 @@ export default class GtfsMapSearch extends React.Component {
     }
     let displayedStops = this.state.stops
     let displayedPatterns = this.state.patterns
-    console.log(displayedStops)
     return (
     <div>
       <GtfsSearch
         feeds={this.props.feeds}
+        limit={100}
         placeholder={this.props.placeholder}
         onChange={handleStopSelection}
         entities={['stops', 'routes']}
