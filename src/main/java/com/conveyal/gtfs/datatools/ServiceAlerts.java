@@ -4,17 +4,33 @@ import com.conveyal.gtfs.api.*;
 import com.conveyal.gtfs.datatools.controllers.ConfigController;
 import com.conveyal.gtfs.datatools.utils.FeedUpdater;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import spark.Filter;
+import spark.Request;
+import spark.Response;
+import spark.utils.IOUtils;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static spark.Spark.before;
+import static spark.Spark.halt;
+import static spark.SparkBase.externalStaticFileLocation;
 import static spark.SparkBase.port;
+import static spark.Spark.get;
 import static spark.SparkBase.staticFileLocation;
 
 
@@ -62,8 +78,19 @@ public class ServiceAlerts {
         staticFileLocation("/public");
 
         // set gtfs-api calls to use "/api/" prefix
-
         ConfigController.register("/api/");
         Routes.routes("api");
+
+        // return index.html for any sub-directory
+        get("/*", (request, response) -> {
+            response.type("text/html");
+            try (InputStream stream = ApiMain.class.getResourceAsStream("/public/index.html")) {
+                return IOUtils.toString(stream);
+            } catch (IOException e) {
+                return null;
+                // if the resource doesn't exist we just carry on.
+            }
+        });
+
     }
 }
