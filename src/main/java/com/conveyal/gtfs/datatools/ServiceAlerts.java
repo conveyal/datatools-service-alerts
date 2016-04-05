@@ -75,11 +75,29 @@ public class ServiceAlerts {
         }
 
         // static location must be set before routes are defined
-        staticFileLocation("/public");
+//        staticFileLocation("/public");
 
         // set gtfs-api calls to use "/api/" prefix
         ConfigController.register("/api/");
         Routes.routes("api");
+
+        // TODO: move assets to folder
+//        get("/assets/*", (request, response) -> {
+//            try (InputStream stream = ApiMain.class.getResourceAsStream("/public/" + request.pathInfo())) {
+//                return IOUtils.toString(stream);
+//            } catch (IOException e) {
+//                return null;
+//                // if the resource doesn't exist we just carry on.
+//            }
+//        });
+        get("/main.js", (request, response) -> {
+            try (InputStream stream = ApiMain.class.getResourceAsStream("/public/main.js")) {
+                return IOUtils.toString(stream);
+            } catch (IOException e) {
+                return null;
+                // if the resource doesn't exist we just carry on.
+            }
+        });
 
         // return index.html for any sub-directory
         get("/*", (request, response) -> {
