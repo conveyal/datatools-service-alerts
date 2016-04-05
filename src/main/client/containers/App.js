@@ -16,11 +16,23 @@ class App extends React.Component {
   constructor (props) {
     super(props)
 
-    this.props.fetchConfig().then(() => {
-      return this.props.checkExistingLogin()
-    })
+    // this.props.fetchConfig().then(() => {
+    //   return this.props.checkExistingLogin()
+    // })
   }
 
+  componentDidMount() {
+    // this.props.fetchConfig().then(() => {
+    //   return this.props.checkExistingLogin()
+    // })
+    this.props.fetchConfig()
+      .then(() => {
+        this.props.checkExistingLogin()
+        .then((action) => {
+          console.log('got config + login')
+        })
+      })
+  }
   render () {
     let canAccess = false, noAccessReason
     if(this.props.user.profile === null) {

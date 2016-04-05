@@ -23,7 +23,7 @@ export function fetchProjects() {
   return function (dispatch, getState) {
     dispatch(requestProjects())
     const dm = new DataManager({ managerUrl : getState().config.managerUrl })
-    dm.getProjectsAndFeeds(getState().user).then((projects) => {
+    return dm.getProjectsAndFeeds(getState().user).then((projects) => {
       console.log('got projects!', projects)
       return dispatch(receiveProjects(projects, getState().config.activeProjectId))
     }).then(() => {

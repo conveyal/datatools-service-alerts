@@ -17,6 +17,10 @@ export default class AlertsViewer extends React.Component {
     //console.log("AV activeFeeds", this.props.activeFeeds);
   }
 
+  componentWillMount () {
+    this.props.onComponentMount(this.props)
+  }
+
   render () {
     return (
       <div>

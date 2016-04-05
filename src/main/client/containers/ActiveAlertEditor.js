@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { saveAlert, deleteAlert } from '../actions/alerts'
+import { fetchProjects } from '../actions/projects'
+import { saveAlert, deleteAlert, createAlert, setActiveAlert } from '../actions/alerts'
 import { setActiveTitle, setActiveDescription, setActiveUrl, setActiveCause,
   setActiveEffect, setActiveStart, setActiveEnd, setActivePublished,
   addActiveEntity, deleteActiveEntity, updateActiveEntity } from '../actions/activeAlert'
@@ -21,12 +22,31 @@ const mapStateToProps = (state, ownProps) => {
   return {
     alert: state.activeAlert,
     activeFeeds: state.gtfsFilter.activeFeeds,
+    project: state.projects.active,
     editableFeeds: getFeedsForPermission(state.projects, state.user.permissions, 'edit-alert')
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    onComponentMount: (initialProps) => {
+      console.log(initialProps)
+
+      if (initialProps.alert === null && initialProps.location.pathname === '/newalert'){
+        console.log('alert', initialProps.alert)
+        return dispatch(createAlert())
+      }
+      if (initialProps.alert === null && initialProps.location.pathname !== '/newalert') {
+        console.log('need to set active alert')
+        dispatch(fetchProjects())
+        .then(() => {
+          console.log('done fetching projects')
+          const alertId = initialProps.location.pathname.split('/alert/')[1]
+          console.log('getting', alertId)
+          dispatch(setActiveAlert(+alertId))
+        })
+      }
+    },
     onSaveClick: (alert) => dispatch(saveAlert(alert)),
     onDeleteClick: (alert) => dispatch(deleteAlert(alert)),
     onPublishClick: (alert, published) => dispatch(setActivePublished(published)),

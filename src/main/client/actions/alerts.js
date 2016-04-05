@@ -3,8 +3,6 @@ import { browserHistory } from 'react-router'
 
 import moment from 'moment'
 
-import { FEEDID } from '../util/util'
-
 // alerts management action
 
 let nextAlertId = 0
@@ -25,7 +23,7 @@ export function createAlert (entity, agency) {
 
       if (agency !== null)
         newEntity.agency = agency
-      
+
       const typeKey = type.toLowerCase()
       newEntity[typeKey] = entity
       entities.push(newEntity)
@@ -39,9 +37,8 @@ export function createAlert (entity, agency) {
       start: moment().unix()*1000,
       end: moment().add(30, 'day').unix()*1000
     }
-
-    dispatch(updateActiveAlert(alert))
     browserHistory.push('/newalert')
+    dispatch(updateActiveAlert(alert))
   }
 }
 
@@ -127,24 +124,27 @@ export const receivedRtdAlerts = (rtdAlerts, activeProject) => {
   }
 }
 
-export function fetchRtdAlerts() {
+export function setActiveAlert (alertId) {
+  return function (dispatch, getState) {
+    const alert = getState().alerts.all.find(a => a.id === alertId)
+    dispatch(updateActiveAlert(alert))
+  }
+}
+
+export function fetchRtdAlerts () {
   return function (dispatch, getState) {
     dispatch(requestRtdAlerts())
-    fetch(getState().config.rtdApi).then((res) => {
+    return fetch(getState().config.rtdApi).then((res) => {
       return res.json()
     }).then((alerts) => {
       return dispatch(receivedRtdAlerts(alerts, getState().projects.active))
     }).then(() => {
-      console.log('done with all that', getState().alerts.entities)
       let feed = getState().projects.active
       const fetchFunctions = getState().alerts.entities.map((entity) => {
-        console.log(entity)
-        // if (typeof entity !== 'undefined')
           return fetchEntity(entity, feed)
-      })//.filter((val) => typeof val !== 'undefined')
+      })
       return Promise.all(fetchFunctions)
       .then((results) => {
-        console.log('promise results', results)
         let newEntities = getState().alerts.entities
         for (var i = 0; i < newEntities.length; i++) {
           newEntities[i].gtfs = results[i]
@@ -157,6 +157,52 @@ export function fetchRtdAlerts() {
     })
   }
 }
+// TODO: implement method for single alert fetch
+// export const requestRtdAlert = () => {
+//   return {
+//     type: 'REQUEST_RTD_ALERT',
+//   }
+// }
+//
+// export const receivedRtdAlert = (rtdAlerts, activeProject) => {
+//   return {
+//     type: 'RECEIVED_RTD_ALERT',
+//     rtdAlerts,
+//     activeProject
+//   }
+// }
+//
+// export function fetchRtdAlert(alertId) {
+//   return function (dispatch, getState) {
+//     dispatch(requestRtdAlert())
+//     return fetch(getState().config.rtdApi + '/' + alertId).then((res) => {
+//       return res.json()
+//     }).then((alert) => {
+//       const project = getState().projects.active
+//       return dispatch(receivedRtdAlerts([alert], project))
+//     }).then(() => {
+//       let feed = getState().projects.active
+//       const fetchFunctions = getState().alerts.entities.map((entity) => {
+//           return fetchEntity(entity, feed)
+//       })
+//       return Promise.all(fetchFunctions)
+//       .then((results) => {
+//         let newEntities = getState().alerts.entities
+//         for (var i = 0; i < newEntities.length; i++) {
+//           newEntities[i].gtfs = results[i]
+//         }
+//         const alerts = getState().alerts.all
+//         const alert = alerts.find(a => a.id === +alertId)
+//         dispatch(receivedGtfsEntities(newEntities, alerts))
+//         console.log('this alert', alert)
+//         dispatch(updateActiveAlert(alert))
+//       }).then((error) => {
+//         console.log('error', error)
+//       })
+//
+//     })
+//   }
+// }
 
 export const updateActiveAlert = (alert) => {
   return {
@@ -173,9 +219,9 @@ export function editAlert(alert) {
 }
 
 export function fetchEntity(entity, activeProject) {
-
-  const feed = activeProject.feeds.find(f => f.defaultGtfsId === entity.entity.AgencyId)
-  const url = entity.type === 'stop' ? `/api/stops/${entity.entity.StopId}?feed=${feed[FEEDID]}` : `/api/routes/${entity.entity.RouteId}?feed=${feed[FEEDID]}`
+  console.log()
+  const feed = activeProject.feeds.find(f => f.externalProperties.MTC.AgencyId === entity.entity.AgencyId)
+  const url = entity.type === 'stop' ? `/api/stops/${entity.entity.StopId}?feed=${feed.externalProperties.MTC.AgencyId}` : `/api/routes/${entity.entity.RouteId}?feed=${feed.externalProperties.MTC.AgencyId}`
   return fetch(url)
   .then((response) => {
     return response.json()
@@ -190,6 +236,7 @@ export function fetchEntity(entity, activeProject) {
 export function saveAlert(alert) {
   return function (dispatch, getState) {
     console.log('saving...')
+    const user = getState().user
     var json = {
       Id: alert.id < 0 ? null : alert.id,
       HeaderText: alert.title || 'New Alert',
@@ -205,7 +252,7 @@ export function saveAlert(alert) {
         return {
           Id: entity.id < 0 ? null : entity.id,
           AlertId: alert.id,
-          AgencyId: entity.agency ? entity.agency.defaultGtfsId : null,
+          AgencyId: entity.agency ? entity.agency.externalProperties.MTC.AgencyId : null,
           RouteId: entity.route ? entity.route.route_id : null,
           RouteType: entity.mode ? entity.mode.gtfsType : null,
           StopId: entity.stop ? entity.stop.stop_id : null,
@@ -223,7 +270,8 @@ export function saveAlert(alert) {
       method,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + user.token
       },
       body: JSON.stringify(json)
     }).then((res) => {

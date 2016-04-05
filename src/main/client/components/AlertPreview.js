@@ -15,19 +15,15 @@ export default class AlertPreview extends React.Component {
       return ent.agency
     })
     var uniqueFeedsInAlert = [...new Set(feeds)]
-    console.log('feeds for alert #' + this.props.alert.id, uniqueFeedsInAlert)
-    console.log('editableFeeds', this.props.editableFeeds)
     const compareFeedSets = (editableFeeds, feedsInAlert) => {
       let matchedFeeds = []
       for (var i = 0; i < feedsInAlert.length; i++) {
-        // console.log(feedsInAlert[i])
 
         // for each editable feed, add it to the matched feeds array if it is in the set of alert feeds
         const feed = editableFeeds.find((f) => { return feedsInAlert[i].id === f.id })
         if (typeof feed !== 'undefined')
           matchedFeeds.push(feed)
       }
-      console.log(matchedFeeds)
       if (matchedFeeds.length !== feedsInAlert.length){
         return false
       }
@@ -35,9 +31,11 @@ export default class AlertPreview extends React.Component {
         return true
       }
     }
-    const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
-    const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
-    console.log(publishingIsDisabled)
+    // const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
+    // const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
+    const editingIsDisabled = false
+    const publishingIsDisabled = false
+    // console.log(publishingIsDisabled)
     return (
       <Panel collapsible header={
         <Row>

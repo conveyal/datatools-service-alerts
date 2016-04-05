@@ -39,10 +39,16 @@ var effects = [
 ]
 
 export default class AlertEditor extends React.Component {
+  componentWillMount () {
+    this.props.onComponentMount(this.props)
+  }
 
   render () {
     console.log('AlertEditor')
     console.log(this.props.alert)
+    if (!this.props.alert) {
+      return <ManagerNavbar />
+    }
     return (
       <div>
         <ManagerNavbar />
@@ -178,6 +184,7 @@ export default class AlertEditor extends React.Component {
                             <GtfsSearch
                               feeds={this.props.activeFeeds}
                               placeholder='Add stop/route'
+                              limit={100}
                               entities={['stops', 'routes']}
                               clearable={true}
                               onChange={(evt) => {

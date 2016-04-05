@@ -27,16 +27,18 @@ export function checkExistingLogin() {
     console.log('checkExistingLogin');
     var login = getState().user.auth0.checkExistingLogin()
     if(login) {
-      login.then((userTokenAndProfile) => {
+      return login.then((userTokenAndProfile) => {
         console.log('user logged in via sso2', userTokenAndProfile);
         return dispatch(userLoggedIn(userTokenAndProfile.token, userTokenAndProfile.profile))
-      }).then(() => {
-        console.log('fetching projects');
-        dispatch(fetchProjects())
       })
+      // .then(() => {
+      //   console.log('fetching projects');
+      //   dispatch(fetchProjects())
+      // })
     } else {
       console.log('no login found');
       dispatch(noExistingLogin())
+      return new Promise((resolve) => { resolve(null); })
     }
   }
 }

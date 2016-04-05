@@ -29,7 +29,26 @@ const activeAlert = (state = null, action) => {
       return update(state, {end: {$set: parseInt(action.end)}})
     case 'SET_ACTIVE_PUBLISHED':
       return update(state, {published: {$set: action.published}})
-
+    case 'RECEIVED_GTFS_ENTITIES':
+      // TODO: update GTFS entities for active alert
+      if (state !== null && state.affectedEntities !== null){
+        for (var i = 0; i < action.gtfsObjects.length; i++) {
+          let ent = action.gtfsObjects[i]
+          if (typeof ent.gtfs !== 'undefined' && ent.AlertId === state.id){
+            // let alert = action.gtfsAlerts.find(a => a.id === ent.entity.AlertId)
+            let updatedEntity = state.affectedEntities.find(e => e.id === ent.entity.Id)
+            updatedEntity[ent.type] = ent.gtfs
+            entities.push(selectedEnt)
+            entities = [
+              ...state.affectedEntities.slice(0, foundIndex),
+              updatedEntity,
+              ...state.affectedEntities.slice(foundIndex + 1)
+            ]
+          }
+        }
+        return update(state, {affectedEntities: {$set: entities}})
+      }
+      return state
     case 'ADD_ACTIVE_AFFECTED_ENTITY':
       entities = [...state.affectedEntities, action.entity]
       return update(state, {affectedEntities: {$set: entities}})
@@ -72,8 +91,10 @@ const activeAlert = (state = null, action) => {
             let stopId = action.value !== null ? action.value.stop_id : null
             updatedEntity = update(action.entity, {
               stop: {$set: action.value},
-              stop_id: {$set: stopId}
-              // agency: {$set: action.value}
+              stop_id: {$set: stopId},
+              agency: {$set: action.agency},
+              route: {$set: null},
+              route_id: {$set: null},
               // TODO: update agency id from feed id?
             })
             entities = [
@@ -86,7 +107,10 @@ const activeAlert = (state = null, action) => {
             let routeId = action.value !== null ? action.value.route_id : null
             updatedEntity = update(action.entity, {
               route: {$set: action.value},
-              route_id: {$set: routeId}
+              route_id: {$set: routeId},
+              agency: {$set: action.agency},
+              stop: {$set: null},
+              stop_id: {$set: null},
               // TODO: update agency id from feed id?
             })
             entities = [

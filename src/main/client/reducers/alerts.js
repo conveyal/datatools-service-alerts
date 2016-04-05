@@ -62,7 +62,7 @@ const alerts = (state = {
       for (var i = 0; i < alerts.length; i++) {
         let action = alerts[i]
         if (typeof action !== 'undefined' && action.ServiceAlertEntities && action.ServiceAlertEntities.length > 0){
-          
+
           for (var j = 0; j < action.ServiceAlertEntities.length; j++) {
             let ent = action.ServiceAlertEntities[j]
             if (ent.StopId !== null){
@@ -96,7 +96,7 @@ const alerts = (state = {
             }
 
             if(ent.AgencyId !== null) {
-              let feed = project.feeds.find(f => f.defaultGtfsId === ent.AgencyId)
+              let feed = project.feeds.find(f => f.externalProperties.MTC.AgencyId === ent.AgencyId)
               entity.agency = feed
               entity.type = 'AGENCY'
             }
@@ -119,7 +119,7 @@ const alerts = (state = {
               entity.type = 'MODE'
             }
 
-            
+
 
             return entity
           })
