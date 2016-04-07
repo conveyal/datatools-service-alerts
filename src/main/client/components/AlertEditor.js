@@ -9,6 +9,9 @@ import GtfsMapSearch from '../gtfs/gtfsmapsearch'
 import GtfsSearch from '../gtfs/gtfssearch'
 import GlobalGtfsFilter from '../containers/GlobalGtfsFilter'
 
+import { checkEntitiesForFeeds } from '../util/util'
+import { browserHistory } from 'react-router'
+
 import moment from 'moment'
 
 var causes = [
@@ -50,16 +53,18 @@ export default class AlertEditor extends React.Component {
       return <ManagerNavbar />
     }
 
-    // ensure publishable feeds contains all that entity agency IDs
-    const checkDisabled = () => {
-      let publishableIds = this.props.publishableFeeds.map(f => f.id)
-      let entityIds = this.props.alert.affectedEntities.map(e => e.agency.id)
-      for (var i = 0; i < entityIds.length; i++) {
-        if (publishableIds.indexOf(entityIds[i]) === -1) return true
-      }
-      return false
-    }
-    const publishDisabled = checkDisabled()
+    const canPublish = checkEntitiesForFeeds(this.props.alert.affectedEntities, this.props.publishableFeeds)
+    const canEdit = checkEntitiesForFeeds(this.props.alert.affectedEntities, this.props.editableFeeds)
+
+    const editingIsDisabled = this.props.alert.published && !canPublish ? true : !canEdit
+
+    // if user has edit rights and alert is unpublished, user can delete alert, else check if they have publish rights
+    const deleteIsDisabled = !editingIsDisabled && !this.props.alert.published ? false : !canPublish
+    const deleteButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot delete because alert is published'
+      : !canEdit ? 'Cannot alter alerts for other agencies' : 'Delete alert'
+
+    const editButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot edit because alert is published'
+      : !canEdit ? 'Cannot alter alerts for other agencies' : 'Edit alert'
 
     return (
       <div>
@@ -93,34 +98,49 @@ export default class AlertEditor extends React.Component {
 
             <Col xs={3}>
               <ButtonGroup className='pull-right'>
-                <Button onClick={(evt) => {
-                  console.log('times', this.props.alert.end, this.props.alert.start);
-                  if(this.props.alert.end < this.props.alert.start) {
-                    alert('Alert end date cannot be before start date')
-                    return
-                  }
-                  if(moment(this.props.alert.end).isBefore(moment())) {
-                    alert('Alert end date cannot be before the current date')
-                    return
-                  }
-                  if(this.props.alert.affectedEntities.length === 0) {
-                    alert('You must specify at least one affected entity')
-                    return
-                  }
+                <Button
+                  title={editButtonMessage}
+                  disabled={editingIsDisabled}
+                  onClick={(evt) => {
+                    console.log('times', this.props.alert.end, this.props.alert.start);
+                    if(this.props.alert.end < this.props.alert.start) {
+                      alert('Alert end date cannot be before start date')
+                      return
+                    }
+                    if(moment(this.props.alert.end).isBefore(moment())) {
+                      alert('Alert end date cannot be before the current date')
+                      return
+                    }
+                    if(this.props.alert.affectedEntities.length === 0) {
+                      alert('You must specify at least one affected entity')
+                      return
+                    }
 
-                  this.props.onSaveClick(this.props.alert)
-                }}>Save</Button>
+                    this.props.onSaveClick(this.props.alert)
+                  }}
+                >Save</Button>
 
                 <Button
-                  disabled={publishDisabled}
+                  disabled={!canPublish}
                   onClick={(evt) => {
                     this.props.onPublishClick(this.props.alert, !this.props.alert.published)
                   }}
                 >
                   {this.props.alert.published ? 'Unpublish' : 'Publish'}</Button>
-                <Button onClick={(evt) => {
-                  this.props.onDeleteClick(this.props.alert)
-                }}>Delete</Button>
+                <Button
+                  title={deleteButtonMessage}
+                  disabled={deleteIsDisabled}
+                  onClick={
+                    (evt) => {
+                    this.props.onDeleteClick(this.props.alert)
+                  }}
+                >Delete</Button>
+                <Button
+                  onClick={
+                    (evt) => {
+                    browserHistory.push('/')
+                  }}
+                >Back</Button>
               </ButtonGroup>
             </Col>
           </Row>

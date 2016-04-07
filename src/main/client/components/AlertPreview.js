@@ -3,6 +3,7 @@ import moment from 'moment'
 
 import { Panel, Grid, Row, Col, ButtonGroup, Button, Glyphicon, Label } from 'react-bootstrap'
 import { Link } from 'react-router'
+import { checkEntitiesForFeeds } from '../util/util'
 
 export default class AlertPreview extends React.Component {
 
@@ -11,36 +12,18 @@ export default class AlertPreview extends React.Component {
   }
 
   render () {
-    var feeds = this.props.alert.affectedEntities.map((ent) => {
-      return ent.agency
-    })
-    var uniqueFeedsInAlert = [...new Set(feeds)]
-    const compareFeedSets = (editableFeeds, feedsInAlert) => {
-      let matchedFeeds = []
-      for (var i = 0; i < feedsInAlert.length; i++) {
+    const canPublish = checkEntitiesForFeeds(this.props.alert.affectedEntities, this.props.publishableFeeds)
+    const canEdit = checkEntitiesForFeeds(this.props.alert.affectedEntities, this.props.editableFeeds)
 
-        // for each editable feed, add it to the matched feeds array if it is in the set of alert feeds
-        const feed = editableFeeds ? editableFeeds.find((f) => { return feedsInAlert[i].id === f.id }) : null
-        if (feed)
-          matchedFeeds.push(feed)
-      }
-      if (matchedFeeds.length !== feedsInAlert.length){
-        return false
-      }
-      else{
-        return true
-      }
-    }
-    console.log(this.props.editableFeeds, uniqueFeedsInAlert)
-    const editingIsDisabled = this.props.alert.published && !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert) ? true : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
+    const editingIsDisabled = this.props.alert.published && !canPublish ? true : !canEdit
 
     // if user has edit rights and alert is unpublished, user can delete alert, else check if they have publish rights
-    const deleteIsDisabled = !editingIsDisabled && !this.props.alert.published ? false : !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
+    const deleteIsDisabled = !editingIsDisabled && !this.props.alert.published ? false : !canPublish
     const deleteButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot delete because alert is published'
-      : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert) ? 'Cannot alter alerts for other agencies' : 'Delete alert'
+      : !canEdit ? 'Cannot alter alerts for other agencies' : 'Delete alert'
 
-      const editButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot edit because alert is published'
-        : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert) ? 'Cannot alter alerts for other agencies' : 'Edit alert'
+    const editButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot edit because alert is published'
+      : !canEdit ? 'Cannot alter alerts for other agencies' : 'Edit alert'
 
     return (
       <Panel collapsible header={
