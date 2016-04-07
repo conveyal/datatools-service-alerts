@@ -45,7 +45,7 @@ export default class GtfsSearch extends React.Component {
     console.log('render search feeds', this.props.feeds)
     const getStops = (input) => {
       const feedIds = this.props.feeds.map(getFeedId)
-      console.log(feedIds)
+      // console.log(feedIds)
       const limit = this.props.limit ? '&limit=' + this.props.limit : ''
       const nameQuery = input ? '&name=' + input : ''
       const url = this.props.filterByRoute ? `/api/stops?route=${this.props.filterByRoute.route_id}&feed=${feedIds.toString()}${limit}` : `/api/stops?feed=${feedIds.toString()}${nameQuery}${limit}`
@@ -101,7 +101,7 @@ export default class GtfsSearch extends React.Component {
         const stops = results[0]
         const routes = typeof results[1] !== 'undefined' ? results[1] : []
         const options = { options: [...stops,...routes] }
-        console.log('search options', options)
+        // console.log('search options', options)
         return options
       })
     }

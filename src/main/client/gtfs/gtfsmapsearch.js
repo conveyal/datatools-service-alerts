@@ -14,11 +14,10 @@ export default class GtfsMapSearch extends React.Component {
 
   constructor(props) {
     super(props)
-    const position = [37.779871, -122.426966]
     this.state = {
       stops: [],
+      position: [37.779871, -122.426966],
       message: '',
-      position: position,
       map: {}
     }
   }
@@ -35,7 +34,7 @@ export default class GtfsMapSearch extends React.Component {
     const handleStopSelection = (input) => {
       console.log(input)
       if (input === null) {
-        this.setState({stops: [], routes: []})
+        this.setState({stops: [], routes: [], patterns: []})
       }
       else if (typeof input !== 'undefined' && input.stop){
         this.setState(Object.assign({}, this.state, { stops: [input.stop], position: [input.stop.stop_lat, input.stop.stop_lon] }))
@@ -48,11 +47,12 @@ export default class GtfsMapSearch extends React.Component {
         })
         .then((json) => {
           console.log(json)
-          // const routes = json.map(p => p.associatedRoutes[0])
-          // console.log(routes)
-          this.setState(Object.assign({}, this.state, { routes: input.route, patterns: json[0] }))
-          // this.setState(Object.assign({}, this.state, {  }))
-          // return json
+          let pattern = json[0]
+
+          // hack to associate route to pattern
+          pattern.associatedRoutes = []
+          pattern.associatedRoutes.push(input.route)
+          this.setState(Object.assign({}, this.state, { routes: [input.route], patterns: [pattern] }))
         })
       }
     }
@@ -69,6 +69,7 @@ export default class GtfsMapSearch extends React.Component {
       />
       <GtfsMap
         feeds={this.props.feeds}
+        position={this.state.position}
         onStopClick={this.props.onStopClick}
         onRouteClick={this.props.onRouteClick}
         stops={displayedStops}

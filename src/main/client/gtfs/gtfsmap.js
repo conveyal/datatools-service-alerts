@@ -1,59 +1,46 @@
 import React, { PropTypes } from 'react'
-import $ from 'jquery'
 
 import fetch from 'isomorphic-fetch'
 
-import { Panel, Grid, Row, Col, Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 
-import { PureComponent, shallowEqual } from 'react-pure-render'
-
-import { Map, Marker, Popup, TileLayer, Polyline, MapControl, GeoJson } from 'react-leaflet'
-
-import Select from 'react-select'
+import { Map, Marker, Popup, TileLayer, GeoJson } from 'react-leaflet'
 
 import { getFeed, getFeedId } from '../util/util'
 
 export default class GtfsMap extends React.Component {
-  
-  constructor(props) {
+
+  constructor (props) {
     super(props)
 
-    const position = [37.779871, -122.426966]
     this.state = {
       stops: [],
       routes: [],
       searchFocus: this.props.searchFocus || false,
       patterns: [],
       message: '',
-      position: position,
+      position: [37.779871, -122.426966],
       map: {}
     }
   }
 
-  componentDidMount() {
-    //console.log(this.props)
+  componentDidMount () {
   }
 
-
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.feeds.length !== this.props.feeds.length) {
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.feeds.length !== this.props.feeds.length) {
       this.refreshGtfsElements(nextProps.feeds)
     }
+    // if (nextProps.position !== this.props.position){
+    //   this.refs.map.fitBounds().panTo([0,0])
+    // }
   }
 
-  render() {
+  render () {
     const {attribution, centerCoordinates, geojson, markers, transitive, url, zoom} = this.props
 
-    const handleSelection = (input) => {
-      this.onChange(input)
-    }
+    console.log('map props', this.props)
 
-
-    const polyline = [
-      [37.779871, -122.426966],
-      [37.78, -122.426966],
-      [37.79, -122.426966],
-    ]
     var mapStyle = {
       height: '400px',
       width: '555px'
@@ -64,7 +51,11 @@ export default class GtfsMap extends React.Component {
       if (this.props.stops.length === 1 && typeof e.layer !== 'undefined' && typeof e.layer._popup !== 'undefined' && this.state.searchFocus){
         e.layer.openPopup()
         this.setState({searchFocus: false})
+
       }
+      // fitbounds to pattern only if a single pattern is specified
+      if (this.props.patterns && this.props.patterns.length === 1 && this.props.stops.length === 0 && typeof e.layer.getBounds === 'function')
+        this.refs.map.getLeafletElement().fitBounds(e.layer.getBounds())
     }
 
     return (
@@ -73,7 +64,7 @@ export default class GtfsMap extends React.Component {
       <Map
         ref='map'
         style={mapStyle}
-        center={this.state.position}
+        center={this.props.position || this.state.position}
         zoom={13}
         onLeafletZoomend={() => this.refreshGtfsElements()}
         onLeafletMoveend={() => this.refreshGtfsElements()}
@@ -145,19 +136,41 @@ export default class GtfsMap extends React.Component {
             )
           }
         })}
+        {this.props.patterns ? this.props.patterns.map((pattern, index) => {
+          if (typeof pattern !== 'undefined') {
+            const route = pattern.associatedRoutes[0]
+            const routeName = route.route_short_name !== null ? route.route_short_name : route.route_long_name
+            return (
+              <GeoJson color={route.route_color !== null ? '#' + route.route_color : 'blue' } data={{type: 'LineString', coordinates: pattern.geometry.coordinates}} >
+                <Popup>
+                  <div>
+                    <h3>{routeName}</h3>
+                    <ul>
+                      <li><strong>ID:</strong> {route.route_id}</li>
+                      <li><strong>Agency:</strong> {getFeed(this.props.feeds, route.feed_id).name}</li>
+                    </ul>
+                    <Button href='#' onClick={() => this.props.onRouteClick(route, getFeed(this.props.feeds, route.feed_id))}>{this.props.popupAction} {route.route_id}</Button>
+                  </div>
+                </Popup>
+              </GeoJson>
+            )
+          }
+        })
+        : ''
+      }
       </Map>
     </div>
     )
   }
 
-  refreshGtfsElements(feeds) {
+  refreshGtfsElements (feeds) {
     const feedIds = (feeds || this.props.feeds).map(getFeedId)
     const zoomLevel = this.refs['map'].getLeafletElement().getZoom()
-    if(feedIds.length === 0 || zoomLevel <= 13) {
-      this.setState({ stops : [], patterns : [], routes : [] })
+    if (feedIds.length === 0 || zoomLevel <= 13) {
+      this.setState({ stops: [], patterns: [], routes: [] })
       return
     }
-    console.log('ref GTFS', feedIds);
+    console.log('ref GTFS', feedIds)
     const bounds = this.refs['map'].getLeafletElement().getBounds()
     const maxLat = bounds.getNorth()
     const maxLng = bounds.getEast()
