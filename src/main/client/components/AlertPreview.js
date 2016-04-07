@@ -32,11 +32,16 @@ export default class AlertPreview extends React.Component {
       }
     }
     console.log(this.props.editableFeeds, uniqueFeedsInAlert)
-    const editingIsDisabled = !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
-    const publishingIsDisabled = !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
-    // const editingIsDisabled = false
-    // const publishingIsDisabled = false
-    // console.log(publishingIsDisabled)
+    const editingIsDisabled = this.props.alert.published && !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert) ? true : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert)
+
+    // if user has edit rights and alert is unpublished, user can delete alert, else check if they have publish rights
+    const deleteIsDisabled = !editingIsDisabled && !this.props.alert.published ? false : !compareFeedSets(this.props.publishableFeeds, uniqueFeedsInAlert)
+    const deleteButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot delete because alert is published'
+      : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert) ? 'Cannot alter alerts for other agencies' : 'Delete alert'
+
+      const editButtonMessage = this.props.alert.published && deleteIsDisabled ? 'Cannot edit because alert is published'
+        : !compareFeedSets(this.props.editableFeeds, uniqueFeedsInAlert) ? 'Cannot alter alerts for other agencies' : 'Edit alert'
+
     return (
       <Panel collapsible header={
         <Row>
@@ -45,10 +50,10 @@ export default class AlertPreview extends React.Component {
           </Col>
           <Col xs={4}>
             <ButtonGroup className='pull-right'>
-              <Button disabled={editingIsDisabled} onClick={() => this.props.onEditClick(this.props.alert)}>
+              <Button title={editButtonMessage} disabled={editingIsDisabled} onClick={() => this.props.onEditClick(this.props.alert)}>
                 <Glyphicon glyph="pencil" />
               </Button>
-              <Button disabled={publishingIsDisabled} onClick={() => this.props.onDeleteClick(this.props.alert)}>
+              <Button title={deleteButtonMessage} disabled={deleteIsDisabled} onClick={() => this.props.onDeleteClick(this.props.alert)}>
                 <Glyphicon glyph="remove" />
               </Button>
             </ButtonGroup>
