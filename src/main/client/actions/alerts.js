@@ -244,7 +244,7 @@ export function saveAlert(alert) {
       Url: alert.url || '',
       Cause: alert.cause || 'UNKNOWN_CAUSE',
       Effect: alert.effect || 'UNKNOWN_EFFECT',
-      Published: 'No',
+      Published: alert.published ? 'Yes' : 'No',
       StartDateTime: alert.start/1000 || 0,
       EndDateTime: alert.end/1000 || 0,
       ServiceAlertEntities: alert.affectedEntities.map((entity) => {

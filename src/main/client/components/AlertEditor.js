@@ -49,6 +49,18 @@ export default class AlertEditor extends React.Component {
     if (!this.props.alert) {
       return <ManagerNavbar />
     }
+
+    // ensure publishable feeds contains all that entity agency IDs
+    const checkDisabled = () => {
+      let publishableIds = this.props.publishableFeeds.map(f => f.id)
+      let entityIds = this.props.alert.affectedEntities.map(e => e.agency.id)
+      for (var i = 0; i < entityIds.length; i++) {
+        if (publishableIds.indexOf(entityIds[i]) === -1) return true
+      }
+      return false
+    }
+    const publishDisabled = checkDisabled()
+
     return (
       <div>
         <ManagerNavbar />
@@ -99,9 +111,12 @@ export default class AlertEditor extends React.Component {
                   this.props.onSaveClick(this.props.alert)
                 }}>Save</Button>
 
-                <Button onClick={(evt) => {
-                  this.props.onPublishClick(this.props.alert, !this.props.alert.published)
-                }}>
+                <Button
+                  disabled={publishDisabled}
+                  onClick={(evt) => {
+                    this.props.onPublishClick(this.props.alert, !this.props.alert.published)
+                  }}
+                >
                   {this.props.alert.published ? 'Unpublish' : 'Publish'}</Button>
                 <Button onClick={(evt) => {
                   this.props.onDeleteClick(this.props.alert)

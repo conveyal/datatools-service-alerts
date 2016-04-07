@@ -31,12 +31,13 @@ const getVisibleAlerts = (alerts, visibilityFilter) => {
 
 const mapStateToProps = (state, ownProps) => {
   console.log('all alerts', state.alerts.all)
+  // if (state.projects.active !== null && state.projects.active.feeds !== null )
   return {
     isFetching: state.alerts.isFetching,
     alerts: getVisibleAlerts(state.alerts.all, state.visibilityFilter),
     visibilityFilter: state.visibilityFilter,
-    editableFeeds: getFeedsForPermission(state.projects, state.user.permissions, 'edit-alert'),
-    publishableFeeds: getFeedsForPermission(state.projects, state.user.permissions, 'publish-alert')
+    editableFeeds: getFeedsForPermission(state.projects.active, state.user, 'edit-alert'),
+    publishableFeeds: getFeedsForPermission(state.projects.active, state.user, 'approve-alert')
   }
 }
 

@@ -252,7 +252,7 @@ class RouteSelector extends React.Component {
     }
     var routes = []
     const feed = typeof this.state.route !== 'undefined' ? getFeed(this.props.feeds, this.state.route.feed_id) : null
-    const agencyName = feed !== null ? feed.name : 'Unknown agency'
+    const agencyName = feed ? feed.name : 'Unknown agency'
 
     return (
       <div>
@@ -298,7 +298,7 @@ class StopSelector extends React.Component {
     }
     var stops = []
     const feed = typeof this.state.stop !== 'undefined' ? getFeed(this.props.feeds, this.state.stop.feed_id) : null
-    const agencyName = feed !== null ? feed.name : 'Unkown agency'
+    const agencyName = feed ? feed.name : 'Unkown agency'
     return (
       <div>
         <GtfsSearch
