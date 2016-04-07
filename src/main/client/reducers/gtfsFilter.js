@@ -13,10 +13,8 @@ const gtfsFilter = (state = {
         userFeeds = action.activeProject.feeds
       }
       else if(action.user.permissions.hasProjectPermission(action.activeProject.id, 'edit-alert')) {
-        const permission = action.user.permissions.getProjectPermission(action.activeProject.id, 'edit-alert')
-        let userFeedIds = permission.feeds || action.user.permissions.getProjectDefaultFeeds(action.activeProject.id)
         userFeeds = action.activeProject.feeds.filter((feed) => {
-          return userFeedIds.indexOf(feed.id) !== -1
+          return action.user.permissions.hasFeedPermission(action.activeProject.id, feed.id, 'edit-alert') !== null
         })
       }
       let validatedFeeds = userFeeds.filter((feed) => {
